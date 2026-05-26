@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Intention Box - Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary": "#30312c",
+                        "tertiary-fixed": "#e4e4c6",
+                        "on-secondary": "#3d2e00",
+                        "inverse-primary": "#5f5f59",
+                        "secondary-container": "#785d00",
+                        "on-tertiary-container": "#65664d",
+                        "tertiary-fixed-dim": "#c8c8ab",
+                        "surface-tint": "#c8c7bf",
+                        "surface-container-highest": "#353535",
+                        "on-tertiary-fixed-variant": "#474832",
+                        "on-tertiary-fixed": "#1b1d0a",
+                        "inverse-on-surface": "#313030",
+                        "surface-container-high": "#2a2a2a",
+                        "surface-bright": "#393939",
+                        "on-surface": "#e5e2e1",
+                        "outline-variant": "#474741",
+                        "primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#584400",
+                        "primary-fixed": "#e4e3db",
+                        "on-primary-container": "#65655f",
+                        "tertiary-container": "#e4e4c6",
+                        "on-primary-fixed-variant": "#474742",
+                        "error-container": "#93000a",
+                        "surface-container-lowest": "#0e0e0e",
+                        "secondary-fixed-dim": "#e6c364",
+                        "on-error": "#690005",
+                        "on-surface-variant": "#c8c7be",
+                        "on-secondary-fixed": "#241a00",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#c8c7bf",
+                        "on-primary-fixed": "#1b1c17",
+                        "surface-container-low": "#1c1b1b",
+                        "on-tertiary": "#30321d",
+                        "tertiary": "#ffffff",
+                        "surface-dim": "#131313",
+                        "on-secondary-container": "#fdd977",
+                        "inverse-surface": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "primary-container": "#e4e3db",
+                        "outline": "#919189",
+                        "surface-variant": "#353535",
+                        "on-background": "#e5e2e1",
+                        "background": "#131313",
+                        "surface-container": "#20201f",
+                        "secondary": "#e6c364",
+                        "secondary-fixed": "#ffe08f",
+                        "surface": "#131313"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "section-gap": "48px",
+                        "margin-mobile": "24px",
+                        "unit": "8px",
+                        "gutter-md": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Playfair Display"],
+                        "label-caps": ["DM Sans"],
+                        "headline-lg": ["Playfair Display"],
+                        "headline-md": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "body-md": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }],
+                        "headline-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["26px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn ease-in 1.5s forwards;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .delay-1 { animation-delay: 0.3s; }
+        .delay-2 { animation-delay: 0.6s; }
+        .delay-3 { animation-delay: 0.9s; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col items-center justify-center px-margin-mobile overflow-hidden selection:bg-secondary selection:text-on-secondary">
+<!-- Ambient background glow to soften the deep black -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-surface-variant/20 via-surface to-surface pointer-events-none z-0"></div>
+<main class="relative z-10 w-full max-w-sm flex flex-col items-center">
+<!-- Sacred Centerpiece -->
+<div class="mb-12 flex flex-col items-center fade-in delay-1">
+<span class="material-symbols-outlined text-secondary text-5xl mb-6" style="font-variation-settings: 'FILL' 1;">candle</span>
+<h1 class="font-headline-lg text-headline-lg text-primary tracking-tight text-center">
+                Intention Box
+            </h1>
+</div>
+<!-- Spacer -->
+<div class="h-section-gap"></div>
+<!-- Action Area -->
+<div class="w-full fade-in delay-2">
+<button class="w-full flex items-center justify-center gap-3 py-4 px-6 border border-secondary rounded-DEFAULT bg-transparent text-primary hover:bg-secondary/10 hover:border-secondary-fixed transition-all duration-300 group">
+<span class="material-symbols-outlined text-[20px] text-primary group-hover:text-secondary transition-colors">
+                    account_circle
+                </span>
+<span class="font-label-caps text-label-caps uppercase tracking-widest text-primary">
+                    Continue with Google
+                </span>
+</button>
+</div>
+<!-- Subtle Footer Note -->
+<div class="mt-12 fade-in delay-3">
+<p class="font-body-md text-body-md text-on-surface-variant/50 text-center max-w-[250px]">
+                Enter your sanctuary.
+            </p>
+</div>
+</main>
+</body></html>

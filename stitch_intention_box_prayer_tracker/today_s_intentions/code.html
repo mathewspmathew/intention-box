@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Today's Intentions - Sacred Intentions</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&amp;family=DM+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-container": "#65655f",
+                        "on-tertiary-container": "#65664d",
+                        "surface-dim": "#131313",
+                        "surface-container": "#20201f",
+                        "on-tertiary-fixed": "#1b1d0a",
+                        "secondary-container": "#785d00",
+                        "outline": "#919189",
+                        "primary": "#ffffff",
+                        "surface": "#131313",
+                        "on-secondary-container": "#fdd977",
+                        "tertiary-container": "#e4e4c6",
+                        "tertiary": "#ffffff",
+                        "surface-bright": "#393939",
+                        "surface-variant": "#353535",
+                        "on-tertiary": "#30321d",
+                        "on-surface": "#e5e2e1",
+                        "on-primary-fixed": "#1b1c17",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#474832",
+                        "primary-fixed-dim": "#c8c7bf",
+                        "inverse-on-surface": "#313030",
+                        "on-background": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#e6c364",
+                        "tertiary-fixed": "#e4e4c6",
+                        "on-secondary": "#3d2e00",
+                        "tertiary-fixed-dim": "#c8c8ab",
+                        "on-primary-fixed-variant": "#474742",
+                        "primary-fixed": "#e4e3db",
+                        "surface-container-highest": "#353535",
+                        "on-secondary-fixed-variant": "#584400",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface-variant": "#c8c7be",
+                        "background": "#131313",
+                        "primary-container": "#e4e3db",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-tint": "#c8c7bf",
+                        "on-error": "#690005",
+                        "inverse-primary": "#5f5f59",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#474741",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed": "#ffe08f",
+                        "secondary": "#e6c364",
+                        "on-primary": "#30312c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-md": "16px",
+                        "margin-mobile": "24px",
+                        "section-gap": "48px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["DM Sans"],
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "headline-sm": ["Playfair Display"],
+                        "label-caps": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-md": ["26px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "headline-lg": ["34px", {"lineHeight": "42px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                        "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #131313; color: #e5e2e1; }
+        .intention-card { border: 1px solid #474741; }
+        .intention-card.active { border-color: #e6c364; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .completed-text { text-decoration: line-through; opacity: 0.6; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col pt-16 pb-20 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-md border-b border-outline-variant/30 bg-surface/80 dark:bg-surface/80">
+<div class="flex items-center justify-between px-margin-mobile h-16 w-full">
+<button class="text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors duration-300 opacity-80 scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-primary dark:text-primary tracking-tight">Sacred Intentions</h1>
+<button class="text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors duration-300">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow px-margin-mobile pt-8 space-y-section-gap max-w-2xl mx-auto w-full">
+<header class="text-center space-y-4">
+<h2 class="font-headline-lg text-headline-lg-mobile text-primary">Today's Intentions</h2>
+<p class="font-body-md text-body-md-mobile text-on-surface-variant">May your prayers find their way.</p>
+</header>
+<!-- Intentions List -->
+<div class="space-y-6 flex flex-col">
+<!-- Intention Card: Active/Featured -->
+<article class="intention-card active bg-[#242424] rounded-lg p-6 flex flex-col space-y-4">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-body-lg-mobile text-primary leading-relaxed pr-8">
+                        For clarity and peace during this transition period at work, that I may find purpose in the new responsibilities.
+                    </p>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<span class="font-label-caps text-label-caps text-secondary">14 DAYS REMAINING</span>
+<button class="flex items-center space-x-2 text-secondary hover:text-primary transition-colors group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="check_circle">check_circle</span>
+<span class="font-label-caps text-label-caps">Mark as Prayed</span>
+</button>
+</div>
+</article>
+<!-- Intention Card: Standard -->
+<article class="intention-card bg-[#242424] rounded-lg p-6 flex flex-col space-y-4">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-body-lg-mobile text-primary leading-relaxed pr-8">
+                        Healing and strength for my sister's recovery journey following her surgery next week.
+                    </p>
+<button class="text-on-surface-variant hover:text-secondary transition-colors">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<span class="font-label-caps text-label-caps text-on-surface-variant">7 DAYS REMAINING</span>
+<button class="flex items-center space-x-2 text-on-surface-variant hover:text-secondary transition-colors group">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+<span class="font-label-caps text-label-caps">Mark as Prayed</span>
+</button>
+</div>
+</article>
+<!-- Intention Card: Completed/Prayed Today -->
+<article class="intention-card bg-[#20201f] rounded-lg p-6 flex flex-col space-y-4 opacity-75">
+<div class="flex justify-between items-start">
+<p class="font-body-lg text-body-lg-mobile text-on-surface-variant leading-relaxed pr-8 completed-text">
+                        Gratitude for the unexpected blessings and the quiet moments of joy found in daily routines.
+                    </p>
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/20">
+<span class="font-label-caps text-label-caps text-outline">PRAYED TODAY</span>
+<div class="flex items-center space-x-2 text-secondary">
+<span class="material-symbols-outlined" data-icon="check_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="font-label-caps text-label-caps">Completed</span>
+</div>
+</div>
+</article>
+</div>
+<div class="flex justify-center pt-8 pb-12">
+<button class="bg-secondary text-on-secondary px-8 py-3 rounded-DEFAULT font-label-caps text-label-caps hover:bg-primary transition-colors flex items-center space-x-2 shadow-sm">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span>New Intention</span>
+</button>
+</div>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 px-margin-mobile pb-6 border-t border-outline-variant/20 bg-surface-container dark:bg-surface-container">
+<div class="flex justify-around items-center w-full h-20 bg-surface-container dark:bg-surface-container">
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</button>
+<button class="flex flex-col items-center justify-center text-secondary dark:text-secondary space-y-1 hover:text-primary dark:hover:text-primary transition-all scale-110 duration-200">
+<span class="material-symbols-outlined" data-icon="auto_awesome" data-weight="fill" style="font-variation-settings: 'FILL' 1;">auto_awesome</span>
+<span class="font-label-caps text-label-caps">Today</span>
+</button>
+<button class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all">
+<span class="material-symbols-outlined" data-icon="account_circle">account_circle</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</button>
+</div>
+</nav>
+</body></html>

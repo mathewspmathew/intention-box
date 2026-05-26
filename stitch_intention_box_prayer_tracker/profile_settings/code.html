@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sacred Intentions - Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&amp;family=DM+Sans:wght@400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "on-primary-container": "#65655f",
+                    "on-tertiary-container": "#65664d",
+                    "surface-dim": "#131313",
+                    "surface-container": "#20201f",
+                    "on-tertiary-fixed": "#1b1d0a",
+                    "secondary-container": "#785d00",
+                    "outline": "#919189",
+                    "primary": "#ffffff",
+                    "surface": "#131313",
+                    "on-secondary-container": "#fdd977",
+                    "tertiary-container": "#e4e4c6",
+                    "tertiary": "#ffffff",
+                    "surface-bright": "#393939",
+                    "surface-variant": "#353535",
+                    "on-tertiary": "#30321d",
+                    "on-surface": "#e5e2e1",
+                    "on-primary-fixed": "#1b1c17",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-fixed-variant": "#474832",
+                    "primary-fixed-dim": "#c8c7bf",
+                    "inverse-on-surface": "#313030",
+                    "on-background": "#e5e2e1",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#e6c364",
+                    "tertiary-fixed": "#e4e4c6",
+                    "on-secondary": "#3d2e00",
+                    "tertiary-fixed-dim": "#c8c8ab",
+                    "on-primary-fixed-variant": "#474742",
+                    "primary-fixed": "#e4e3db",
+                    "surface-container-highest": "#353535",
+                    "on-secondary-fixed-variant": "#584400",
+                    "error-container": "#93000a",
+                    "surface-container-high": "#2a2a2a",
+                    "on-surface-variant": "#c8c7be",
+                    "background": "#131313",
+                    "primary-container": "#e4e3db",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-tint": "#c8c7bf",
+                    "on-error": "#690005",
+                    "inverse-primary": "#5f5f59",
+                    "on-error-container": "#ffdad6",
+                    "outline-variant": "#474741",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed": "#ffe08f",
+                    "secondary": "#e6c364",
+                    "on-primary": "#30312c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter-md": "16px",
+                    "margin-mobile": "24px",
+                    "section-gap": "48px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "body-md": ["DM Sans"],
+                    "headline-md": ["Playfair Display"],
+                    "headline-lg": ["Playfair Display"],
+                    "body-lg": ["DM Sans"],
+                    "headline-sm": ["Playfair Display"],
+                    "label-caps": ["DM Sans"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-md": ["26px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["34px", {"lineHeight": "42px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "500"}],
+                    "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}]
+            }
+          },
+        }
+      }
+    </script>
+<style>
+        body { background-color: theme('colors.surface'); color: theme('colors.on-surface'); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="antialiased min-h-screen flex flex-col pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-md border-b border-outline-variant/30 bg-surface/80 dark:bg-surface/80">
+<div class="flex items-center justify-between px-margin-mobile h-16 w-full">
+<button class="text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors duration-300 opacity-80 scale-95 transition-all">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary tracking-tight">Sacred Intentions</h1>
+<button class="text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors duration-300">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-24 px-margin-mobile md:px-section-gap max-w-4xl mx-auto w-full flex flex-col gap-section-gap">
+<!-- Profile Header -->
+<section class="flex flex-col items-center justify-center text-center pt-8">
+<div class="w-24 h-24 rounded-full bg-surface-container border border-secondary flex items-center justify-center mb-4">
+<span class="material-symbols-outlined text-4xl text-secondary" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-primary">Seeker</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Nurturing stillness since 2023</p>
+</section>
+<!-- Settings Section -->
+<section class="flex flex-col gap-6">
+<h3 class="font-headline-sm text-headline-sm text-secondary border-b border-outline-variant/30 pb-2">Rituals &amp; Preferences</h3>
+<div class="bg-surface-container border border-outline-variant/30 rounded-lg p-6 flex flex-col gap-6">
+<!-- Notification Time Picker -->
+<div class="flex justify-between items-center">
+<div>
+<p class="font-body-lg text-body-lg text-primary">Evening Reflection</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Daily gentle reminder to close the day.</p>
+</div>
+<div class="border-b border-primary focus-within:border-secondary pb-1 w-24 text-right">
+<input class="bg-transparent border-none text-primary font-body-md text-body-md focus:ring-0 p-0 text-right w-full cursor-pointer appearance-none" type="time" value="22:00"/>
+</div>
+</div>
+<!-- History Toggle -->
+<div class="flex justify-between items-center">
+<div>
+<p class="font-body-lg text-body-lg text-primary">Keep History</p>
+<p class="font-body-md text-body-md text-on-surface-variant">Preserve past intentions in your journal.</p>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface border border-outline-variant rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-secondary after:border-secondary after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+</label>
+</div>
+</div>
+</section>
+<!-- Integrations -->
+<section class="flex flex-col gap-6">
+<h3 class="font-headline-sm text-headline-sm text-secondary border-b border-outline-variant/30 pb-2">Connections</h3>
+<button class="bg-secondary text-on-secondary font-label-caps text-label-caps rounded w-full py-4 px-6 flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+                Connect Google Calendar
+            </button>
+</section>
+<!-- History -->
+<section class="flex flex-col gap-6 pb-8">
+<h3 class="font-headline-sm text-headline-sm text-secondary border-b border-outline-variant/30 pb-2">Recent Journey</h3>
+<div class="flex flex-col gap-4">
+<div class="bg-surface-container p-6 rounded-lg border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-secondary mb-2">OCT 24, 2023</p>
+<p class="font-body-lg text-body-lg text-primary">Cultivate patience during the morning rush.</p>
+</div>
+<div class="bg-surface-container p-6 rounded-lg border border-outline-variant/30">
+<p class="font-label-caps text-label-caps text-secondary mb-2">OCT 22, 2023</p>
+<p class="font-body-lg text-body-lg text-primary">Speak words of affirmation to a stranger.</p>
+</div>
+</div>
+<button class="mt-8 text-on-surface-variant font-label-caps text-label-caps border-b border-on-surface-variant self-center hover:text-primary hover:border-primary transition-colors pb-1">
+                Sign Out
+            </button>
+</section>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full z-50 px-margin-mobile pb-6 border-t border-outline-variant/20 bg-surface-container dark:bg-surface-container flex justify-around items-center h-20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-label-caps text-label-caps">Today</span>
+</a>
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary space-y-1 hover:text-primary dark:hover:text-primary transition-all scale-110 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="account_circle" data-weight="fill" style="font-variation-settings: 'FILL' 1;">account_circle</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</a>
+</nav>
+</body></html>

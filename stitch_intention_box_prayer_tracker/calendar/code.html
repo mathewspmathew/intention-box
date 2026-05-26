@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sacred Intentions - Calendar</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#e5e2e1",
+                    "on-primary-container": "#65655f",
+                    "on-tertiary-container": "#65664d",
+                    "surface-dim": "#131313",
+                    "surface-container": "#20201f",
+                    "on-tertiary-fixed": "#1b1d0a",
+                    "secondary-container": "#785d00",
+                    "outline": "#919189",
+                    "primary": "#ffffff",
+                    "surface": "#131313",
+                    "on-secondary-container": "#fdd977",
+                    "tertiary-container": "#e4e4c6",
+                    "tertiary": "#ffffff",
+                    "surface-bright": "#393939",
+                    "surface-variant": "#353535",
+                    "on-tertiary": "#30321d",
+                    "on-surface": "#e5e2e1",
+                    "on-primary-fixed": "#1b1c17",
+                    "surface-container-lowest": "#0e0e0e",
+                    "on-tertiary-fixed-variant": "#474832",
+                    "primary-fixed-dim": "#c8c7bf",
+                    "inverse-on-surface": "#313030",
+                    "on-background": "#e5e2e1",
+                    "error": "#ffb4ab",
+                    "secondary-fixed-dim": "#e6c364",
+                    "tertiary-fixed": "#e4e4c6",
+                    "on-secondary": "#3d2e00",
+                    "tertiary-fixed-dim": "#c8c8ab",
+                    "on-primary-fixed-variant": "#474742",
+                    "primary-fixed": "#e4e3db",
+                    "surface-container-highest": "#353535",
+                    "on-secondary-fixed-variant": "#584400",
+                    "error-container": "#93000a",
+                    "surface-container-high": "#2a2a2a",
+                    "on-surface-variant": "#c8c7be",
+                    "background": "#131313",
+                    "primary-container": "#e4e3db",
+                    "on-secondary-fixed": "#241a00",
+                    "surface-tint": "#c8c7bf",
+                    "on-error": "#690005",
+                    "inverse-primary": "#5f5f59",
+                    "on-error-container": "#ffdad6",
+                    "outline-variant": "#474741",
+                    "surface-container-low": "#1c1b1b",
+                    "secondary-fixed": "#ffe08f",
+                    "secondary": "#e6c364",
+                    "on-primary": "#30312c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "gutter-md": "16px",
+                    "margin-mobile": "24px",
+                    "section-gap": "48px",
+                    "unit": "8px"
+            },
+            "fontFamily": {
+                    "body-md": [
+                            "DM Sans"
+                    ],
+                    "headline-md": [
+                            "Playfair Display"
+                    ],
+                    "headline-lg": [
+                            "Playfair Display"
+                    ],
+                    "body-lg": [
+                            "DM Sans"
+                    ],
+                    "headline-sm": [
+                            "Playfair Display"
+                    ],
+                    "label-caps": [
+                            "DM Sans"
+                    ]
+            },
+            "fontSize": {
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "26px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "34px",
+                            {
+                                    "lineHeight": "42px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "700"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        /* Custom scrollbar for an elegant feel */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #474741;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #919189;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar Shared Component -->
+<header class="fixed top-0 w-full z-50 backdrop-blur-md border-b border-outline-variant/30 bg-surface/80 dark:bg-surface/80 flex items-center justify-between px-margin-mobile h-16 transition-all">
+<button aria-label="Menu" class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-300 opacity-80 hover:opacity-100 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-secondary/50">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-primary dark:text-primary tracking-tight">Sacred Intentions</h1>
+<button aria-label="Notifications" class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-300 opacity-80 hover:opacity-100 flex items-center justify-center p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-secondary/50">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-grow pt-[88px] pb-[104px] px-margin-mobile max-w-3xl mx-auto w-full flex flex-col items-center">
+<!-- Calendar Header -->
+<div class="w-full flex items-center justify-between mb-section-gap pt-unit">
+<button aria-label="Previous Month" class="text-on-surface-variant hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined">chevron_left</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg text-primary text-center">October 2023</h2>
+<button aria-label="Next Month" class="text-on-surface-variant hover:text-primary transition-colors p-2">
+<span class="material-symbols-outlined">chevron_right</span>
+</button>
+</div>
+<!-- Calendar Grid -->
+<div class="w-full">
+<!-- Days of week -->
+<div class="grid grid-cols-7 mb-4 text-center">
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">S</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">M</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">T</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">W</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">T</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">F</div>
+<div class="font-label-caps text-label-caps text-on-surface-variant uppercase">S</div>
+</div>
+<!-- Days Grid -->
+<div class="grid grid-cols-7 gap-y-6 gap-x-2">
+<!-- Empty slots for days from previous month -->
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">24</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">25</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">26</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">27</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">28</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">29</span>
+</div>
+<div class="h-16 flex items-center justify-center opacity-30 cursor-not-allowed">
+<span class="font-body-lg text-body-lg text-on-surface">30</span>
+</div>
+<!-- Current Month Days -->
+<!-- Day 1: No intentions -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">1</span>
+</button>
+<!-- Day 2: Has active intention -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">2</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+</div>
+</button>
+<!-- Day 3 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">3</span>
+</button>
+<!-- Day 4: Has multiple intentions -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">4</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-secondary opacity-70"></div>
+</div>
+</button>
+<!-- Day 5 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">5</span>
+</button>
+<!-- Day 6 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">6</span>
+</button>
+<!-- Day 7 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">7</span>
+</button>
+<!-- Day 8: Today (Active State) -->
+<button class="relative h-16 flex flex-col items-center justify-center bg-surface-container border border-secondary/30 rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-secondary group">
+<span class="font-body-lg text-body-lg text-secondary font-bold">8</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+</div>
+</button>
+<!-- Day 9 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">9</span>
+</button>
+<!-- Day 10 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">10</span>
+</button>
+<!-- Day 11 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">11</span>
+</button>
+<!-- Day 12 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">12</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+</div>
+</button>
+<!-- Day 13 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">13</span>
+</button>
+<!-- Day 14 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">14</span>
+</button>
+<!-- Day 15 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">15</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+</div>
+</button>
+<!-- Day 16 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">16</span>
+</button>
+<!-- Day 17 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">17</span>
+</button>
+<!-- Day 18 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">18</span>
+</button>
+<!-- Day 19 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">19</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+<div class="w-1.5 h-1.5 rounded-full bg-secondary opacity-70"></div>
+</div>
+</button>
+<!-- Day 20 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">20</span>
+</button>
+<!-- Day 21 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">21</span>
+</button>
+<!-- Day 22 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">22</span>
+</button>
+<!-- Day 23 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">23</span>
+</button>
+<!-- Day 24 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">24</span>
+</button>
+<!-- Day 25 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">25</span>
+</button>
+<!-- Day 26 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">26</span>
+<div class="absolute bottom-2 flex gap-1">
+<div class="w-1.5 h-1.5 rounded-full bg-secondary"></div>
+</div>
+</button>
+<!-- Day 27 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">27</span>
+</button>
+<!-- Day 28 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">28</span>
+</button>
+<!-- Day 29 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">29</span>
+</button>
+<!-- Day 30 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">30</span>
+</button>
+<!-- Day 31 -->
+<button class="relative h-16 flex flex-col items-center justify-center hover:bg-surface-variant rounded-xl transition-colors focus:outline-none focus:ring-1 focus:ring-outline-variant group">
+<span class="font-body-lg text-body-lg text-on-surface">31</span>
+</button>
+</div>
+</div>
+</main>
+<!-- Global Floating Action Button -->
+<button aria-label="Add new intention" class="fixed bottom-28 right-margin-mobile w-14 h-14 bg-surface-container-high border border-secondary rounded-full flex items-center justify-center shadow-lg shadow-black/50 z-40 hover:bg-secondary hover:text-on-secondary transition-colors duration-300 group focus:outline-none focus:ring-2 focus:ring-secondary/50 focus:ring-offset-2 focus:ring-offset-background">
+<span class="material-symbols-outlined text-secondary group-hover:text-on-secondary transition-colors duration-300" style="font-size: 28px;">add</span>
+</button>
+<!-- BottomNavBar Shared Component -->
+<nav class="fixed bottom-0 w-full z-50 px-margin-mobile pb-6 border-t border-outline-variant/20 bg-surface-container dark:bg-surface-container md:hidden">
+<div class="flex justify-around items-center w-full h-20 bg-surface-container dark:bg-surface-container">
+<!-- Active: Calendar -->
+<a class="flex flex-col items-center justify-center text-secondary dark:text-secondary space-y-1 scale-110 duration-200" href="#">
+<span class="material-symbols-outlined fill">calendar_month</span>
+<span class="font-label-caps text-label-caps">Calendar</span>
+</a>
+<!-- Inactive: Today -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-label-caps text-label-caps">Today</span>
+</a>
+<!-- Inactive: Profile -->
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-surface-variant space-y-1 hover:text-primary dark:hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-label-caps text-label-caps">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Desktop Navigation (Hidden on Mobile, replaces BottomNav) -->
+<nav class="hidden md:flex fixed top-0 left-0 h-full w-64 flex-col border-r border-outline-variant/30 bg-surface-container/50 backdrop-blur-md pt-[88px] px-6 z-40">
+<ul class="flex flex-col space-y-4">
+<li>
+<a class="flex items-center space-x-4 p-3 rounded-xl bg-surface-variant/50 text-secondary border border-secondary/20 transition-colors" href="#">
+<span class="material-symbols-outlined fill">calendar_month</span>
+<span class="font-body-lg text-body-lg">Calendar</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 p-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/30 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-body-lg text-body-lg">Today</span>
+</a>
+</li>
+<li>
+<a class="flex items-center space-x-4 p-3 rounded-xl text-on-surface-variant hover:bg-surface-variant/30 hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+<span class="font-body-lg text-body-lg">Profile</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Day Details Modal (Hidden by default, shown for demonstration) -->
+<!-- Add 'hidden' class to the backdrop to hide it in a real implementation -->
+<div class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center hidden opacity-0 transition-opacity duration-300 bg-black/60 backdrop-blur-sm p-4 sm:p-0" id="day-modal">
+<!-- Modal Content Canvas -->
+<div class="bg-surface border border-outline-variant/30 w-full sm:max-w-md rounded-t-[24px] sm:rounded-2xl p-6 shadow-2xl transform translate-y-full sm:translate-y-0 sm:scale-95 transition-transform duration-300 max-h-[751px] flex flex-col relative overflow-hidden">
+<!-- Handle for mobile swipe-down visual cue -->
+<div class="w-12 h-1 bg-outline-variant/50 rounded-full mx-auto mb-6 sm:hidden"></div>
+<!-- Modal Header -->
+<div class="flex justify-between items-start mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-primary">October 8</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">2 Intentions</p>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-2 -mr-2 rounded-full hover:bg-surface-variant/50 focus:outline-none focus:ring-2 focus:ring-outline-variant" id="close-modal">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Intentions List (Scrollable if needed) -->
+<div class="flex-grow overflow-y-auto pr-2 space-y-4 mb-6">
+<!-- Intention Card 1 -->
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl p-5 hover:border-secondary/50 transition-colors group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<!-- Votive Toggle (Checked state) -->
+<div class="w-10 h-6 bg-surface-variant rounded-full relative cursor-pointer flex items-center border border-outline-variant/50 px-0.5">
+<div class="w-5 h-5 rounded-full bg-secondary shadow-sm transform translate-x-3.5 transition-transform"></div>
+</div>
+<span class="font-label-caps text-label-caps text-secondary ml-1">LIT</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant border border-outline-variant/30 px-2 py-1 rounded">Morning</span>
+</div>
+<p class="font-body-lg text-body-lg text-primary">Patience with my thoughts, space for my breath.</p>
+</div>
+<!-- Intention Card 2 -->
+<div class="bg-surface-container border border-outline-variant/30 rounded-xl p-5 hover:border-secondary/50 transition-colors group">
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<!-- Votive Toggle (Unchecked state) -->
+<div class="w-10 h-6 bg-surface-variant rounded-full relative cursor-pointer flex items-center border border-outline-variant/50 px-0.5">
+<div class="w-5 h-5 rounded-full bg-on-surface-variant shadow-sm transform translate-x-0 transition-transform"></div>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant ml-1">UNLIT</span>
+</div>
+<span class="font-label-caps text-label-caps text-on-surface-variant border border-outline-variant/30 px-2 py-1 rounded">Evening</span>
+</div>
+<p class="font-body-lg text-body-lg text-primary">Release the day's tension into the earth.</p>
+</div>
+</div>
+<!-- Modal Action -->
+<div class="pt-2">
+<button class="w-full flex items-center justify-center space-x-2 bg-transparent border border-secondary text-secondary py-3.5 px-6 rounded-lg hover:bg-secondary/10 transition-colors font-label-caps text-label-caps focus:outline-none focus:ring-2 focus:ring-secondary/50">
+<span class="material-symbols-outlined" style="font-size: 20px;">add</span>
+<span>ADD INTENTION FOR OCT 8</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+        // Minimal script to demonstrate modal interaction
+        document.addEventListener('DOMContentLoaded', () => {
+            const modal = document.getElementById('day-modal');
+            const modalContent = modal.querySelector('div');
+            const closeBtn = document.getElementById('close-modal');
+            
+            // Function to open modal
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modalContent.classList.remove('translate-y-full');
+                    modalContent.classList.add('translate-y-0');
+                }, 10);
+            };
+
+            // Function to close modal
+            const closeModal = () => {
+                modal.classList.add('opacity-0');
+                modalContent.classList.remove('translate-y-0');
+                modalContent.classList.add('translate-y-full');
+                
+                // Wait for transition to finish before hiding
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                }, 300);
+            };
+
+            // Attach click to the 'Today' (8th) button to open modal
+            const activeDayBtn = document.querySelector('button span.text-secondary').parentElement;
+            if(activeDayBtn) {
+                activeDayBtn.addEventListener('click', openModal);
+            }
+
+            // Close events
+            closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+        });
+    </script>
+</body></html>

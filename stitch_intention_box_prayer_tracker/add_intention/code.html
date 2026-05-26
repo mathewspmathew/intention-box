@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sacred Intentions - Add Intention</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&amp;family=Playfair+Display:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-surface": "#e5e2e1",
+                        "on-primary-container": "#65655f",
+                        "on-tertiary-container": "#65664d",
+                        "surface-dim": "#131313",
+                        "surface-container": "#20201f",
+                        "on-tertiary-fixed": "#1b1d0a",
+                        "secondary-container": "#785d00",
+                        "outline": "#919189",
+                        "primary": "#ffffff",
+                        "surface": "#131313",
+                        "on-secondary-container": "#fdd977",
+                        "tertiary-container": "#e4e4c6",
+                        "tertiary": "#ffffff",
+                        "surface-bright": "#393939",
+                        "surface-variant": "#353535",
+                        "on-tertiary": "#30321d",
+                        "on-surface": "#e5e2e1",
+                        "on-primary-fixed": "#1b1c17",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#474832",
+                        "primary-fixed-dim": "#c8c7bf",
+                        "inverse-on-surface": "#313030",
+                        "on-background": "#e5e2e1",
+                        "error": "#ffb4ab",
+                        "secondary-fixed-dim": "#e6c364",
+                        "tertiary-fixed": "#e4e4c6",
+                        "on-secondary": "#3d2e00",
+                        "tertiary-fixed-dim": "#c8c8ab",
+                        "on-primary-fixed-variant": "#474742",
+                        "primary-fixed": "#e4e3db",
+                        "surface-container-highest": "#353535",
+                        "on-secondary-fixed-variant": "#584400",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface-variant": "#c8c7be",
+                        "background": "#131313",
+                        "primary-container": "#e4e3db",
+                        "on-secondary-fixed": "#241a00",
+                        "surface-tint": "#c8c7bf",
+                        "on-error": "#690005",
+                        "inverse-primary": "#5f5f59",
+                        "on-error-container": "#ffdad6",
+                        "outline-variant": "#474741",
+                        "surface-container-low": "#1c1b1b",
+                        "secondary-fixed": "#ffe08f",
+                        "secondary": "#e6c364",
+                        "on-primary": "#30312c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter-md": "16px",
+                        "margin-mobile": "24px",
+                        "section-gap": "48px",
+                        "unit": "8px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["DM Sans"],
+                        "headline-md": ["Playfair Display"],
+                        "headline-lg": ["Playfair Display"],
+                        "body-lg": ["DM Sans"],
+                        "headline-sm": ["Playfair Display"],
+                        "label-caps": ["DM Sans"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["26px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["34px", { "lineHeight": "42px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-sm": ["20px", { "lineHeight": "28px", "fontWeight": "500" }],
+                        "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .ledger-input:focus { outline: none; border-bottom-color: #e6c364; }
+        .bottom-sheet-enter { transform: translateY(100%); opacity: 0; }
+        .bottom-sheet-enter-active { transform: translateY(0); opacity: 1; transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease-out; }
+        .backdrop-enter { opacity: 0; }
+        .backdrop-enter-active { opacity: 1; transition: opacity 0.3s ease-out; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased min-h-screen relative overflow-hidden flex flex-col font-body-md">
+<!-- Top Navigation (Active: None specifically, generic layout context) -->
+<header class="fixed top-0 w-full z-40 bg-surface/80 dark:bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 flex items-center justify-between px-margin-mobile h-16 w-full">
+<button class="text-secondary dark:text-secondary hover:text-secondary dark:hover:text-secondary transition-colors duration-300 opacity-80 scale-95 transition-all">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md-mobile text-primary dark:text-primary tracking-tight">Sacred Intentions</h1>
+<button class="text-on-surface-variant dark:text-on-surface-variant hover:text-secondary dark:hover:text-secondary transition-colors duration-300">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</header>
+<!-- Canvas (Background Context) -->
+<main class="flex-grow pt-24 px-margin-mobile pb-32 opacity-30 pointer-events-none filter blur-sm transition-all duration-500">
+<div class="space-y-section-gap">
+<div class="p-5 border border-outline-variant/20 rounded-lg bg-surface-container flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">vital_signs</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-2">Morning Clarity</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Guide my thoughts to remain focused on what truly matters today.</p>
+</div>
+</div>
+<div class="p-5 border border-outline-variant/20 rounded-lg bg-surface-container flex items-start gap-4">
+<span class="material-symbols-outlined text-secondary mt-1">favorite</span>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-2">Patience in Chaos</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Grant me the stillness to pause before reacting.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Overlay Backdrop -->
+<div aria-hidden="true" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 backdrop-enter-active" id="backdrop"></div>
+<!-- Bottom Sheet -->
+<div class="fixed bottom-0 left-0 w-full bg-surface-container rounded-t-3xl z-50 border-t border-outline-variant/30 shadow-2xl flex flex-col bottom-sheet-enter-active max-h-[795px]" id="bottomSheet">
+<!-- Drag Handle -->
+<div class="w-full flex justify-center pt-4 pb-2 cursor-grab active:cursor-grabbing">
+<div class="w-12 h-1 bg-outline-variant rounded-full"></div>
+</div>
+<div class="px-margin-mobile pt-2 pb-12 overflow-y-auto space-y-8">
+<header class="flex justify-between items-center">
+<h2 class="font-headline-lg text-headline-lg-mobile text-primary">New Intention</h2>
+<button aria-label="Close" class="text-on-surface-variant hover:text-primary transition-colors p-2" id="closeSheet">
+<span class="material-symbols-outlined text-[28px]">close</span>
+</button>
+</header>
+<form class="space-y-10">
+<!-- Intention Input -->
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-secondary uppercase tracking-widest" for="intentionText">The Intention</label>
+<textarea class="w-full bg-transparent border-0 border-b border-outline-variant/50 focus:border-secondary ledger-input font-body-lg text-body-lg text-primary placeholder:text-on-surface-variant/50 p-0 py-2 resize-none transition-colors" id="intentionText" placeholder="Write your focus..." rows="3"></textarea>
+</div>
+<!-- Duration Input -->
+<div class="space-y-2">
+<label class="block font-label-caps text-label-caps text-secondary uppercase tracking-widest" for="durationDays">Duration (Days)</label>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:border-secondary transition-colors" onclick="document.getElementById('durationDays').value = Math.max(1, parseInt(document.getElementById('durationDays').value || 1) - 1)" type="button">
+<span class="material-symbols-outlined">remove</span>
+</button>
+<input class="w-20 text-center bg-transparent border-0 border-b border-outline-variant/50 focus:border-secondary ledger-input font-headline-md text-headline-md text-primary p-0 py-1 transition-colors appearance-none" id="durationDays" min="1" type="number" value="7"/>
+<button class="w-10 h-10 rounded-full border border-outline-variant flex items-center justify-center text-primary hover:border-secondary transition-colors" onclick="document.getElementById('durationDays').value = parseInt(document.getElementById('durationDays').value || 1) + 1" type="button">
+<span class="material-symbols-outlined">add</span>
+</button>
+</div>
+</div>
+<!-- Votive Toggle -->
+<div class="flex items-center justify-between pt-4">
+<div>
+<span class="block font-headline-sm text-headline-sm text-primary mb-1">Light a Votive</span>
+<span class="block font-body-md text-body-md text-on-surface-variant text-sm">Keep this intention illuminated</span>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-surface-variant rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-secondary after:border-secondary after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-outline-variant/30"></div>
+</label>
+</div>
+<!-- Save Action -->
+<div class="pt-6">
+<button class="w-full bg-secondary text-on-secondary font-label-caps text-label-caps uppercase tracking-[0.2em] py-4 rounded DEFAULT hover:bg-secondary-fixed transition-colors" type="button">
+                        Seal Intention
+                    </button>
+</div>
+</form>
+</div>
+</div>
+<script>
+        // Simple close animation logic
+        document.getElementById('closeSheet').addEventListener('click', function() {
+            const sheet = document.getElementById('bottomSheet');
+            const backdrop = document.getElementById('backdrop');
+            
+            sheet.style.transform = 'translateY(100%)';
+            sheet.style.opacity = '0';
+            backdrop.style.opacity = '0';
+            
+            setTimeout(() => {
+                // In a real app this would route back or remove elements
+                sheet.style.display = 'none';
+                backdrop.style.display = 'none';
+                document.querySelector('main').classList.remove('opacity-30', 'blur-sm');
+            }, 400);
+        });
+
+        // Basic textarea auto-grow
+        const textarea = document.getElementById('intentionText');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+</body></html>
