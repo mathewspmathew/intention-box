@@ -86,6 +86,7 @@ export default function ProfileScreen() {
         <View style={styles.avatarBox}>
           <Ionicons name="person-circle-outline" size={48} color={colors.accent} />
         </View>
+        {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
         <Text style={styles.tagline}>Nurturing stillness since {accountYear(user)}</Text>
 
         <SectionTitle title="Rituals & Preferences" />
@@ -168,7 +169,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginTop: spacing.md,
   },
-  tagline: { color: colors.mutedText, textAlign: "center", marginTop: spacing.lg, fontSize: fontSize.md },
+  email: { color: colors.primaryText, textAlign: "center", marginTop: spacing.md, fontSize: fontSize.sm, fontWeight: "600" },
+  tagline: { color: colors.mutedText, textAlign: "center", marginTop: spacing.xs, fontSize: fontSize.md },
   sectionHeader: { marginTop: spacing.xxl, marginBottom: spacing.md, gap: spacing.xs },
   sectionTitle: { color: colors.accent, fontFamily: fonts.heading, fontSize: fontSize.lg, fontWeight: "600" },
   sectionLine: { height: 1, backgroundColor: colors.mutedText, opacity: 0.3 },
