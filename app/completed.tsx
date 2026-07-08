@@ -15,6 +15,7 @@ import {
 import type { HistoryEntry } from "../types";
 import { colors, fonts, fontSize, radius, spacing } from "../constants/theme";
 import { fromISO } from "../utils/dateUtils";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 type RetentionOption = { label: string; value: number };
 const OPTIONS: RetentionOption[] = [
@@ -30,6 +31,7 @@ export default function CompletedScreen() {
   const { setSettings } = useSettings(user?.uid);
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
+  const [confirmClearVisible, setConfirmClearVisible] = useState(false);
 
   const refresh = useCallback(async () => {
     if (!user) return;
@@ -63,7 +65,8 @@ export default function CompletedScreen() {
     await setSettings({ historyRetentionDays: value });
   };
 
-  const onClearAll = async () => {
+  const confirmClearAll = async () => {
+    setConfirmClearVisible(false);
     if (!user) return;
     try {
       const existing = await listHistory(user.uid);
@@ -81,10 +84,20 @@ export default function CompletedScreen() {
           <Feather name="chevron-left" size={26} color={colors.accent} />
         </Pressable>
         <Text style={styles.title}>Completed Intentions</Text>
-        <Pressable onPress={onClearAll} hitSlop={12} style={styles.clearBtn}>
+        <Pressable onPress={() => setConfirmClearVisible(true)} hitSlop={12} style={styles.clearBtn}>
           <MaterialCommunityIcons name="broom" size={20} color={colors.accent} />
         </Pressable>
       </View>
+
+      <ConfirmModal
+        visible={confirmClearVisible}
+        title="Clear all completed intentions?"
+        message="This will permanently delete your entire completed history."
+        confirmLabel="Yes"
+        cancelLabel="No"
+        onConfirm={confirmClearAll}
+        onCancel={() => setConfirmClearVisible(false)}
+      />
 
       <View style={styles.retentionBox}>
         <Text style={styles.retentionLabel}>AUTO-DELETE AFTER</Text>
