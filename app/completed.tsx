@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { View, Text, Pressable, FlatList, StyleSheet, ActivityIndicator } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { format } from "date-fns";
 import { useAuth } from "../hooks/useAuth";
@@ -17,13 +18,13 @@ import { fromISO } from "../utils/dateUtils";
 
 type RetentionOption = { label: string; value: number };
 const OPTIONS: RetentionOption[] = [
-  { label: "No history", value: 0 },
   { label: "7 days", value: 7 },
   { label: "1 month", value: 30 },
 ];
 
 export default function CompletedScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { user } = useAuth();
   const { historyRetentionDays } = useSettingsStore();
   const { setSettings } = useSettings(user?.uid);
@@ -62,14 +63,27 @@ export default function CompletedScreen() {
     await setSettings({ historyRetentionDays: value });
   };
 
+  const onClearAll = async () => {
+    if (!user) return;
+    try {
+      const existing = await listHistory(user.uid);
+      for (const e of existing) await deleteHistoryEntry(user.uid, e.id);
+      setEntries([]);
+    } catch (e: any) {
+      console.warn("clear history failed", e?.message ?? e);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.sm }]}>
         <Pressable onPress={() => router.back()} hitSlop={12} style={styles.backBtn}>
           <Feather name="chevron-left" size={26} color={colors.accent} />
         </Pressable>
         <Text style={styles.title}>Completed Intentions</Text>
-        <View style={{ width: 32 }} />
+        <Pressable onPress={onClearAll} hitSlop={12} style={styles.clearBtn}>
+          <MaterialCommunityIcons name="broom" size={20} color={colors.accent} />
+        </Pressable>
       </View>
 
       <View style={styles.retentionBox}>
@@ -146,6 +160,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
   },
   backBtn: { padding: spacing.xs, width: 32 },
+  clearBtn: { padding: spacing.xs, width: 32, alignItems: "flex-end" },
   title: {
     flex: 1,
     color: colors.primaryText,
