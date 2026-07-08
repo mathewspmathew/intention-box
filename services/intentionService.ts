@@ -14,6 +14,7 @@ import {
 import { db } from "./firebase";
 import type { Intention } from "../types";
 import { addDaysISO, daysBetween, todayISO } from "../utils/dateUtils";
+import { updateWidget } from "./widgetService";
 
 const intentionsCol = (userId: string) => collection(db, "users", userId, "intentions");
 
@@ -105,4 +106,5 @@ export const subscribeIntentions = (
 ): Unsubscribe =>
   onSnapshot(intentionsCol(userId), (snap) => {
     onChange(snap.docs.map((d) => d.data() as Intention));
+    void updateWidget();
   });

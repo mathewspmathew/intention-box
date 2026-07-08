@@ -1,5 +1,5 @@
 import * as TaskManager from "expo-task-manager";
-import * as BackgroundFetch from "expo-background-fetch";
+import * as BackgroundTask from "expo-background-task";
 import { auth } from "../services/firebase";
 import {
   catchUpMissedDays,
@@ -8,6 +8,7 @@ import {
 } from "../services/intentionService";
 import { archiveIntention } from "../services/historyService";
 import { scheduleIntentionNotifications, cancelAll } from "../services/notificationService";
+import { updateWidget } from "../services/widgetService";
 import { useSettingsStore } from "../stores/settingsStore";
 import { isPast, todayISO } from "../utils/dateUtils";
 
@@ -16,7 +17,7 @@ export const MIDNIGHT_TASK = "MIDNIGHT_TASK";
 TaskManager.defineTask(MIDNIGHT_TASK, async () => {
   try {
     const user = auth.currentUser;
-    if (!user) return BackgroundFetch.BackgroundFetchResult.NoData;
+    if (!user) return BackgroundTask.BackgroundTaskResult.Success;
     const { historyRetentionDays, notificationTime } = useSettingsStore.getState();
     const today = todayISO();
 
@@ -38,19 +39,18 @@ TaskManager.defineTask(MIDNIGHT_TASK, async () => {
       }
     }
 
-    return BackgroundFetch.BackgroundFetchResult.NewData;
+    await updateWidget();
+    return BackgroundTask.BackgroundTaskResult.Success;
   } catch (e) {
     console.warn("MIDNIGHT_TASK failed", e);
-    return BackgroundFetch.BackgroundFetchResult.Failed;
+    return BackgroundTask.BackgroundTaskResult.Failed;
   }
 });
 
 export const registerMidnightTask = async (): Promise<void> => {
   try {
-    await BackgroundFetch.registerTaskAsync(MIDNIGHT_TASK, {
-      minimumInterval: 60 * 60, // 1 hour minimum on Android; OS decides actual cadence
-      stopOnTerminate: false,
-      startOnBoot: true,
+    await BackgroundTask.registerTaskAsync(MIDNIGHT_TASK, {
+      minimumInterval: 60, // minutes; OS decides actual cadence within this floor
     });
   } catch (e) {
     console.warn("registerMidnightTask failed", e);

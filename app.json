@@ -7,6 +7,7 @@
     "icon": "./assets/icon.png",
     "scheme": "intentionbox",
     "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -30,6 +31,22 @@
         "expo-notifications",
         {
           "color": "#C9A84C"
+        }
+      ],
+      [
+        "react-native-android-widget",
+        {
+          "widgets": [
+            {
+              "name": "TodayWidget",
+              "label": "Today's Intentions",
+              "description": "Shows today's active intentions",
+              "minWidth": "250dp",
+              "minHeight": "110dp",
+              "resizeMode": "none",
+              "updatePeriodMillis": 1800000
+            }
+          ]
         }
       ]
     ],

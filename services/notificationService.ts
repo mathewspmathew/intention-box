@@ -60,8 +60,8 @@ export const scheduleIntentionNotifications = async (
       },
       trigger:
         Platform.OS === "android"
-          ? { date: fireAt, channelId: NOTIFICATION_CHANNEL }
-          : { date: fireAt },
+          ? { type: Notifications.SchedulableTriggerInputTypes.DATE, date: fireAt, channelId: NOTIFICATION_CHANNEL }
+          : { type: Notifications.SchedulableTriggerInputTypes.DATE, date: fireAt },
     });
     ids.push(id);
   }

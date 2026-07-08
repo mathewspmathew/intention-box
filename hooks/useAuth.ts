@@ -7,6 +7,7 @@ import {
   type User,
 } from "firebase/auth";
 import { auth } from "../services/firebase";
+import { updateWidget } from "../services/widgetService";
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -16,6 +17,7 @@ export const useAuth = () => {
     const unsub = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      void updateWidget();
     });
     return unsub;
   }, []);

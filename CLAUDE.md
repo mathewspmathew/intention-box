@@ -312,6 +312,104 @@ App opens
 
 ---
 
+## Home-Screen Widget (Android Only)
+
+A read-only Android home-screen widget that displays today's intentions. Tap-to-open only — no in-widget buttons.
+
+### Spec
+
+- **Platform:** Android only (no iOS in v1)
+- **Size:** 4×2 medium (single size)
+- **Header:** today's date + day of week (e.g. "Tue, May 26")
+- **Body:** scrollable list of today's active intentions, **text only** (no "Day X of Y")
+- **Empty state:** "No intentions today"
+- **Signed-out state:** "Open app to sign in"
+- **Tap anywhere on widget:** deep-link to `(tabs)/today`
+- **Theme:** matches app — bg `#1A1A1A`, accent `#C9A84C`, primary text `#FFFDF5`, muted `#888880`
+
+### Stack additions
+
+| Concern | Choice |
+|---|---|
+| Workflow | Switch from Expo Managed → **Expo Prebuild (CNG)**. Keeps JS code unchanged; generates `android/` folder. Lose Expo Go, use dev client. |
+| Widget library | **`react-native-android-widget`** — widget UI authored in JSX, no Kotlin/XML needed for the widget body itself. |
+| Data bridge | Library's built-in shared storage (writes a JSON blob the widget reads). No direct Firestore / AsyncStorage access from widget process. |
+| Deep linking | `intentionbox://today` scheme; route handled in `app/_layout.tsx`. |
+
+### Data flow
+
+```
+App (JS) ──writes today's snapshot──▶ Shared storage (file)
+                                          │
+                                          ▼
+                                  Widget process reads
+                                          │
+                                          ▼
+                                  Renders list + date
+```
+
+The widget **never** touches Firestore. The app pushes a fresh snapshot whenever today's intentions change.
+
+### Refresh triggers (call `updateWidget()` from these spots)
+
+1. App start (after auth resolves)
+2. Intention created / edited / deleted
+3. Prayed / Not Prayed action
+4. Midnight background task (after expiry + reschedule)
+5. Firestore `onSnapshot` listener fires with new data (cross-device sync)
+6. Sign-in / sign-out
+
+### Files to add
+
+```
+services/widgetService.ts        # updateWidget() — builds snapshot, writes to shared storage,
+                                 # calls library's requestWidgetUpdate()
+components/widget/
+  TodayWidget.tsx                # Widget UI (JSX via react-native-android-widget)
+  TodayWidgetTask.tsx            # Widget task handler (registered with library)
+app.json                         # Add react-native-android-widget config plugin entry
+```
+
+### Files to modify (minimal touches)
+
+| File | Change |
+|---|---|
+| `app/_layout.tsx` | Register widget task; handle `intentionbox://today` deep link |
+| `hooks/useIntentions.ts` | Call `updateWidget()` after each mutation |
+| `hooks/useAuth.ts` | Call `updateWidget()` on sign-in / sign-out |
+| `tasks/midnightTask.ts` | Call `updateWidget()` at end |
+| `services/intentionService.ts` | Call `updateWidget()` inside `onSnapshot` callback |
+
+### Snapshot shape written to shared storage
+
+```ts
+type WidgetSnapshot = {
+  signedIn: boolean;
+  date: string;              // "Tue, May 26"
+  intentions: string[];      // text only, ordered by createdAt
+  updatedAt: number;         // for debugging
+};
+```
+
+### Implementation order
+
+1. Run `npx expo prebuild --platform android` (one-time; generates `android/`)
+2. `npx expo install react-native-android-widget`; add its config plugin to `app.json`
+3. Create `services/widgetService.ts` with `updateWidget()` stub (writes mock data)
+4. Build `components/widget/TodayWidget.tsx` — header + scrollable list + empty/signed-out states
+5. Register widget task in `app/_layout.tsx`
+6. Wire `updateWidget()` into the 6 trigger points above
+7. Add `intentionbox://` scheme to `app.json`; handle deep link to `(tabs)/today`
+8. Test: install dev client, add widget to home screen, verify all triggers refresh it
+
+### Notes
+
+- Widget runs in a separate Android process — no React context, no Zustand, no Firebase available there. All data comes through the shared-storage snapshot.
+- Keep `updateWidget()` cheap; it runs often. Build the snapshot from in-memory Zustand state, not by re-reading Firestore.
+- If shared storage is empty (fresh install, never written), the widget should render the signed-out state.
+
+---
+
 ## Background Task (Midnight Expiry)
 
 ```ts

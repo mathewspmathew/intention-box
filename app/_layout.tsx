@@ -14,6 +14,7 @@ import { useNotifications } from "../hooks/useNotifications";
 import { useSettings } from "../hooks/useSettings";
 import { colors } from "../constants/theme";
 import "../tasks/midnightTask";
+import "../tasks/widgetTask";
 
 export default function RootLayout() {
   const [fontsLoaded] = usePlayfair({
