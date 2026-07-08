@@ -80,9 +80,14 @@ export const useIntentions = (userId: string | undefined) => {
       const today = todayISO();
       const prayed = intention.prayedDates ?? [];
       if (prayed.includes(today)) return;
-      await updateIntention(userId, intention.id, { prayedDates: [...prayed, today] });
+      const updated = { ...intention, prayedDates: [...prayed, today] };
+      await updateIntention(userId, intention.id, { prayedDates: updated.prayedDates });
+      if (today >= intention.currentEndDate) {
+        if (historyRetentionDays !== 0) await archiveIntention(userId, updated);
+        await deleteIntention(userId, intention.id);
+      }
     },
-    [userId],
+    [userId, historyRetentionDays],
   );
 
   const markNotPrayed = useCallback(

@@ -71,6 +71,10 @@ export default function TodayScreen() {
           else add(text, durationDays);
         }}
         onDelete={(id) => remove(id)}
+        onPray={(id) => {
+          const item = intentions.find((i) => i.id === id);
+          if (item) markPrayed(item);
+        }}
       />
     </View>
   );

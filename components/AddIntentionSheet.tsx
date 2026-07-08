@@ -12,11 +12,12 @@ export type AddIntentionSheetRef = {
 type Props = {
   onSubmit: (args: { text: string; durationDays: number; id?: string }) => void;
   onDelete?: (id: string) => void;
+  onPray?: (id: string) => void;
 };
 
 const PRESETS = [1, 3, 7] as const;
 
-export const AddIntentionSheet = forwardRef<AddIntentionSheetRef, Props>(({ onSubmit, onDelete }, ref) => {
+export const AddIntentionSheet = forwardRef<AddIntentionSheetRef, Props>(({ onSubmit, onDelete, onPray }, ref) => {
   const sheetRef = useRef<BottomSheet>(null);
   const [text, setText] = useState("");
   const [preset, setPreset] = useState<number | "custom" | null>(null);
@@ -56,6 +57,12 @@ export const AddIntentionSheet = forwardRef<AddIntentionSheetRef, Props>(({ onSu
     sheetRef.current?.close();
   };
 
+  const pray = () => {
+    if (!editingId || !onPray) return;
+    onPray(editingId);
+    sheetRef.current?.close();
+  };
+
   const requestDelete = () => {
     if (!editingId || !onDelete) return;
     Alert.alert(
@@ -87,16 +94,16 @@ export const AddIntentionSheet = forwardRef<AddIntentionSheetRef, Props>(({ onSu
       <BottomSheetView style={styles.container}>
         <View style={styles.headerRow}>
           <Text style={styles.title}>{editingId ? "Edit Intention" : "New Intention"}</Text>
-          <View style={styles.headerActions}>
-            {editingId && onDelete && (
+          <Pressable onPress={() => sheetRef.current?.close()} hitSlop={8}>
+            <Feather name="x" size={24} color={colors.primaryText} />
+          </Pressable>
+          {editingId && onDelete && (
+            <View style={styles.deleteBtnWrap} pointerEvents="box-none">
               <Pressable onPress={requestDelete} hitSlop={8} style={styles.deleteBtn}>
-                <Feather name="x" size={20} color={colors.danger} />
+                <Feather name="trash-2" size={16} color={colors.danger} />
               </Pressable>
-            )}
-            <Pressable onPress={() => sheetRef.current?.close()} hitSlop={8}>
-              <Feather name="x" size={24} color={colors.primaryText} />
-            </Pressable>
-          </View>
+            </View>
+          )}
         </View>
 
         <Text style={styles.fieldLabel}>THE INTENTION</Text>
@@ -150,9 +157,20 @@ export const AddIntentionSheet = forwardRef<AddIntentionSheetRef, Props>(({ onSu
 
         <View style={{ flex: 1 }} />
 
-        <Pressable onPress={submit} style={styles.button}>
-          <Text style={styles.buttonText}>SEAL INTENTION</Text>
-        </Pressable>
+        {editingId && onPray ? (
+          <>
+            <Pressable onPress={pray} style={styles.button}>
+              <Text style={styles.buttonText}>PRAYED</Text>
+            </Pressable>
+            <Pressable onPress={submit} hitSlop={8} style={styles.saveLink}>
+              <Text style={styles.saveLinkText}>Save changes</Text>
+            </Pressable>
+          </>
+        ) : (
+          <Pressable onPress={submit} style={styles.button}>
+            <Text style={styles.buttonText}>SEAL INTENTION</Text>
+          </Pressable>
+        )}
       </BottomSheetView>
     </BottomSheet>
   );
@@ -162,8 +180,16 @@ AddIntentionSheet.displayName = "AddIntentionSheet";
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: spacing.xl, gap: spacing.sm },
-  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-  headerActions: { flexDirection: "row", alignItems: "center", gap: spacing.md },
+  headerRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", position: "relative" },
+  deleteBtnWrap: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   deleteBtn: {
     width: 28,
     height: 28,
@@ -227,4 +253,6 @@ const styles = StyleSheet.create({
     marginTop: spacing.lg,
   },
   buttonText: { color: colors.background, fontWeight: "700", fontSize: fontSize.md, letterSpacing: 2 },
+  saveLink: { alignItems: "center", paddingVertical: spacing.md },
+  saveLinkText: { color: colors.mutedText, fontSize: fontSize.sm, textDecorationLine: "underline" },
 });
