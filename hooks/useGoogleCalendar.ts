@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import * as AuthSession from "expo-auth-session";
+import { GoogleSignin, isSuccessResponse } from "@react-native-google-signin/google-signin";
 import * as SecureStore from "expo-secure-store";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCalendarStore } from "../stores/calendarStore";
@@ -9,30 +9,23 @@ const TOKEN_KEY = "google_calendar_token";
 const BIRTHDAYS_KEY = "birthdays_cache";
 const SCOPE = "https://www.googleapis.com/auth/calendar.readonly";
 
-const discovery = {
-  authorizationEndpoint: "https://accounts.google.com/o/oauth2/v2/auth",
-  tokenEndpoint: "https://oauth2.googleapis.com/token",
-  revocationEndpoint: "https://oauth2.googleapis.com/revoke",
-};
-
 export const useGoogleCalendar = () => {
   const { setBirthdays } = useCalendarStore();
 
   const connect = useCallback(async () => {
-    const clientId = process.env.EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID ?? "";
-    const redirectUri = AuthSession.makeRedirectUri({ scheme: "intentionbox" });
-    const request = new AuthSession.AuthRequest({
-      clientId,
-      scopes: [SCOPE],
-      redirectUri,
-      responseType: AuthSession.ResponseType.Token,
-    });
-    const result = await request.promptAsync(discovery);
-    if (result.type === "success" && result.authentication?.accessToken) {
-      await SecureStore.setItemAsync(TOKEN_KEY, result.authentication.accessToken);
+    console.log("[GoogleCalendar] connect() called, currentUser:", GoogleSignin.getCurrentUser());
+    try {
+      const response = await GoogleSignin.addScopes({ scopes: [SCOPE] });
+      console.log("[GoogleCalendar] addScopes response:", JSON.stringify(response));
+      if (!response || !isSuccessResponse(response)) return false;
+      const { accessToken } = await GoogleSignin.getTokens();
+      console.log("[GoogleCalendar] got accessToken, length:", accessToken?.length);
+      await SecureStore.setItemAsync(TOKEN_KEY, accessToken);
       return true;
+    } catch (e: any) {
+      console.log("[GoogleCalendar] connect() error:", e?.code, e?.message);
+      return false;
     }
-    return false;
   }, []);
 
   const syncBirthdays = useCallback(async () => {
@@ -63,5 +56,5 @@ export const useGoogleCalendar = () => {
     if (raw) setBirthdays(JSON.parse(raw) as Birthday[]);
   }, [setBirthdays]);
 
-  return { connect, syncBirthdays, loadCached };
+  return { connect, syncBirthdays, loadCached, googleCalendarRequestReady: true };
 };

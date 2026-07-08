@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet, Alert } from "react-native";
+import { View, Text, Pressable, ScrollView, StyleSheet, Alert, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as Notifications from "expo-notifications";
@@ -38,7 +38,7 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { notificationTime, googleCalendarConnected } = useSettingsStore();
   const { setSettings } = useSettings(user?.uid);
-  const { connect, syncBirthdays } = useGoogleCalendar();
+  const { connect, syncBirthdays, googleCalendarRequestReady } = useGoogleCalendar();
   const [timeModal, setTimeModal] = useState(false);
 
   const onConnect = async () => {
@@ -84,7 +84,11 @@ export default function ProfileScreen() {
       <TopBarSpacer />
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.avatarBox}>
-          <Ionicons name="person-circle-outline" size={48} color={colors.accent} />
+          {user?.photoURL ? (
+            <Image source={{ uri: user.photoURL }} style={styles.avatarImage} />
+          ) : (
+            <Ionicons name="person-circle-outline" size={48} color={colors.accent} />
+          )}
         </View>
         {user?.email ? <Text style={styles.email}>{user.email}</Text> : null}
         <Text style={styles.tagline}>Nurturing stillness since {accountYear(user)}</Text>
@@ -115,7 +119,11 @@ export default function ProfileScreen() {
 
         <SectionTitle title="Connections" />
         {!googleCalendarConnected ? (
-          <Pressable onPress={onConnect} style={styles.connectBtn}>
+          <Pressable
+            onPress={onConnect}
+            disabled={!googleCalendarRequestReady}
+            style={[styles.connectBtn, !googleCalendarRequestReady && { opacity: 0.6 }]}
+          >
             <Feather name="calendar" size={18} color={colors.background} />
             <Text style={styles.connectText}>Connect Google Calendar</Text>
           </Pressable>
@@ -168,7 +176,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginTop: spacing.md,
+    overflow: "hidden",
   },
+  avatarImage: { width: "100%", height: "100%" },
   email: { color: colors.primaryText, textAlign: "center", marginTop: spacing.md, fontSize: fontSize.sm, fontWeight: "600" },
   tagline: { color: colors.mutedText, textAlign: "center", marginTop: spacing.xs, fontSize: fontSize.md },
   sectionHeader: { marginTop: spacing.xxl, marginBottom: spacing.md, gap: spacing.xs },
