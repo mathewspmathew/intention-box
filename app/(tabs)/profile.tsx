@@ -6,7 +6,8 @@ import * as Notifications from "expo-notifications";
 import { useAuth } from "../../hooks/useAuth";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { useSettings } from "../../hooks/useSettings";
-import { useGoogleCalendar } from "../../hooks/useGoogleCalendar";
+// Google Calendar / birthday sync — disabled for now, see notes near "Connections" section below.
+// import { useGoogleCalendar } from "../../hooks/useGoogleCalendar";
 import { NotificationTimeModal } from "../../components/NotificationTimeModal";
 import { TopBarSpacer } from "../../components/TopBarSpacer";
 import {
@@ -36,15 +37,16 @@ const accountYear = (user: { metadata?: { creationTime?: string } } | null | und
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
-  const { notificationTime, googleCalendarConnected } = useSettingsStore();
+  const { notificationTime } = useSettingsStore();
   const { setSettings } = useSettings(user?.uid);
-  const { connect, syncBirthdays, googleCalendarRequestReady } = useGoogleCalendar();
+  // const { googleCalendarConnected } = useSettingsStore();
+  // const { connect, syncBirthdays, googleCalendarRequestReady } = useGoogleCalendar();
   const [timeModal, setTimeModal] = useState(false);
 
-  const onConnect = async () => {
-    const ok = await connect();
-    if (ok) await setSettings({ googleCalendarConnected: true });
-  };
+  // const onConnect = async () => {
+  //   const ok = await connect();
+  //   if (ok) await setSettings({ googleCalendarConnected: true });
+  // };
 
   const testNotification = async () => {
     try {
@@ -117,6 +119,8 @@ export default function ProfileScreen() {
           <Feather name="chevron-right" size={22} color={colors.accent} />
         </Pressable>
 
+        {/* Google Calendar connect / birthday sync — disabled for now.
+            To restore: uncomment the useGoogleCalendar import/hook above and this block.
         <SectionTitle title="Connections" />
         {!googleCalendarConnected ? (
           <Pressable
@@ -133,6 +137,7 @@ export default function ProfileScreen() {
             <Text style={styles.connectText}>Sync Birthdays</Text>
           </Pressable>
         )}
+        */}
 
         <SectionTitle title="Debug" />
         <Pressable onPress={testNotification} style={styles.debugBtn}>

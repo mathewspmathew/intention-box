@@ -7,6 +7,7 @@ import { colors } from "../constants/theme";
 
 export const useCalendarData = () => {
   const { intentions } = useIntentionStore();
+  // Google Calendar birthday sync — disabled for now, birthdays store stays empty.
   const { birthdays, setDayIntentions, dayIntentions } = useCalendarStore();
 
   useEffect(() => {
@@ -27,9 +28,9 @@ export const useCalendarData = () => {
     for (const day of Object.keys(dayIntentions)) {
       marks[day] = { marked: true, dotColor: colors.accent };
     }
-    for (const b of birthdays) {
-      marks[b.date] = { marked: true, dotColor: colors.accent };
-    }
+    // for (const b of birthdays) {
+    //   marks[b.date] = { marked: true, dotColor: colors.accent };
+    // }
     return marks;
   }, [dayIntentions, birthdays]);
 
