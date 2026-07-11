@@ -39,24 +39,34 @@ export const requestPermissions = async (): Promise<boolean> => {
   return status === "granted";
 };
 
-export const scheduleIntentionNotifications = async (
-  intention: Intention,
+export const scheduleDailyNotifications = async (
+  intentions: Intention[],
   hhmm: string,
 ): Promise<string[]> => {
   const { hour, minute } = parseNotificationTime(hhmm);
-  const days = getDateRange(intention.startDate, intention.currentEndDate);
+
+  const countsByDay: Record<string, number> = {};
+  for (const intention of intentions) {
+    if (!intention.active) continue;
+    const prayed = new Set(intention.prayedDates ?? []);
+    for (const day of getDateRange(intention.startDate, intention.currentEndDate)) {
+      if (prayed.has(day)) continue;
+      countsByDay[day] = (countsByDay[day] ?? 0) + 1;
+    }
+  }
+
   const ids: string[] = [];
-  for (const day of days) {
+  for (const [day, count] of Object.entries(countsByDay)) {
     const fireAt = new Date(`${day}T00:00:00`);
     fireAt.setHours(hour, minute, 0, 0);
     if (fireAt.getTime() < Date.now()) continue;
     const id = await Notifications.scheduleNotificationAsync({
       content: {
         title: buildNotificationTitle(),
-        body: buildNotificationBody(intention),
+        body: buildNotificationBody(count),
         categoryIdentifier: NOTIFICATION_CATEGORY,
         color: colors.accent,
-        data: { intentionId: intention.id, scheduledFor: day },
+        data: { scheduledFor: day },
       },
       trigger:
         Platform.OS === "android"

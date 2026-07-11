@@ -7,10 +7,10 @@ import {
   deleteIntention,
 } from "../services/intentionService";
 import { archiveIntention } from "../services/historyService";
-import { scheduleIntentionNotifications, cancelAll } from "../services/notificationService";
+import { scheduleDailyNotifications, cancelAll } from "../services/notificationService";
 import { updateWidget } from "../services/widgetService";
 import { useSettingsStore } from "../stores/settingsStore";
-import { isPast, todayISO } from "../utils/dateUtils";
+import { isPast } from "../utils/dateUtils";
 
 export const MIDNIGHT_TASK = "MIDNIGHT_TASK";
 
@@ -18,8 +18,7 @@ TaskManager.defineTask(MIDNIGHT_TASK, async () => {
   try {
     const user = auth.currentUser;
     if (!user) return BackgroundTask.BackgroundTaskResult.Success;
-    const { historyRetentionDays, notificationTime } = useSettingsStore.getState();
-    const today = todayISO();
+    const { historyRetentionDays, notificationTime, notificationsEnabled } = useSettingsStore.getState();
 
     await catchUpMissedDays(user.uid);
 
@@ -32,11 +31,9 @@ TaskManager.defineTask(MIDNIGHT_TASK, async () => {
     }
 
     await cancelAll();
-    const remaining = await listActiveIntentions(user.uid);
-    for (const it of remaining) {
-      if (today >= it.startDate && today <= it.currentEndDate) {
-        await scheduleIntentionNotifications(it, notificationTime);
-      }
+    if (notificationsEnabled) {
+      const remaining = await listActiveIntentions(user.uid);
+      await scheduleDailyNotifications(remaining, notificationTime);
     }
 
     await updateWidget();

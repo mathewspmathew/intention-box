@@ -10,13 +10,13 @@ import {
   updateIntention,
 } from "../services/intentionService";
 import { archiveIntention } from "../services/historyService";
-import { cancelAll, scheduleIntentionNotifications } from "../services/notificationService";
+import { cancelAll, scheduleDailyNotifications } from "../services/notificationService";
 import type { Intention } from "../types";
 import { addDaysISO, isPast, todayISO } from "../utils/dateUtils";
 
 export const useIntentions = (userId: string | undefined) => {
   const { intentions, setIntentions } = useIntentionStore();
-  const { historyRetentionDays, notificationTime } = useSettingsStore();
+  const { historyRetentionDays, notificationTime, notificationsEnabled } = useSettingsStore();
 
   useEffect(() => {
     if (!userId) return;
@@ -24,17 +24,25 @@ export const useIntentions = (userId: string | undefined) => {
     return unsub;
   }, [userId, setIntentions]);
 
+  const rescheduleNotifications = useCallback(async () => {
+    if (!userId) return;
+    try {
+      await cancelAll();
+      if (!notificationsEnabled) return;
+      const active = await listActiveIntentions(userId);
+      await scheduleDailyNotifications(active, notificationTime);
+    } catch (e) {
+      console.warn("reschedule notifications failed", e);
+    }
+  }, [userId, notificationTime, notificationsEnabled]);
+
   const add = useCallback(
     async (text: string, durationDays: number) => {
       if (!userId) return;
-      const intention = await createIntention(userId, text, durationDays);
-      try {
-        await scheduleIntentionNotifications(intention, notificationTime);
-      } catch (e) {
-        console.warn("schedule failed", e);
-      }
+      await createIntention(userId, text, durationDays);
+      await rescheduleNotifications();
     },
-    [userId, notificationTime],
+    [userId, rescheduleNotifications],
   );
 
   const edit = useCallback(
@@ -49,29 +57,19 @@ export const useIntentions = (userId: string | undefined) => {
       }
       await updateIntention(userId, id, finalPatch);
       if (typeof patch.durationDays === "number") {
-        try {
-          await cancelAll();
-          const active = await listActiveIntentions(userId);
-          const today = todayISO();
-          for (const it of active) {
-            if (today >= it.startDate && today <= it.currentEndDate) {
-              await scheduleIntentionNotifications(it, notificationTime);
-            }
-          }
-        } catch (e) {
-          console.warn("reschedule after edit failed", e);
-        }
+        await rescheduleNotifications();
       }
     },
-    [userId, intentions, notificationTime],
+    [userId, intentions, rescheduleNotifications],
   );
 
   const remove = useCallback(
     async (id: string) => {
       if (!userId) return;
       await deleteIntention(userId, id);
+      await rescheduleNotifications();
     },
-    [userId],
+    [userId, rescheduleNotifications],
   );
 
   const markPrayed = useCallback(
@@ -86,16 +84,18 @@ export const useIntentions = (userId: string | undefined) => {
         if (historyRetentionDays !== 0) await archiveIntention(userId, updated);
         await deleteIntention(userId, intention.id);
       }
+      await rescheduleNotifications();
     },
-    [userId, historyRetentionDays],
+    [userId, historyRetentionDays, rescheduleNotifications],
   );
 
   const markNotPrayed = useCallback(
     async (intention: Intention) => {
       if (!userId) return;
       await extendIntentionByOneDay(userId, intention);
+      await rescheduleNotifications();
     },
-    [userId],
+    [userId, rescheduleNotifications],
   );
 
   const expireOverdue = useCallback(async () => {

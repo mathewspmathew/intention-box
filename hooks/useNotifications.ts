@@ -4,13 +4,12 @@ import {
   setupNotificationCategory,
   requestPermissions,
   cancelAll,
-  scheduleIntentionNotifications,
+  scheduleDailyNotifications,
 } from "../services/notificationService";
 import { useIntentionStore } from "../stores/intentionStore";
 import { useSettingsStore } from "../stores/settingsStore";import {
   catchUpMissedDays,
   extendIntentionByOneDay,
-  getIntention,
   listActiveIntentions,
   updateIntention,
 } from "../services/intentionService";
@@ -27,7 +26,7 @@ Notifications.setNotificationHandler({
 
 export const useNotifications = (userId: string | undefined) => {
   const { intentions } = useIntentionStore();
-  const { notificationTime } = useSettingsStore();
+  const { notificationTime, notificationsEnabled } = useSettingsStore();
 
   useEffect(() => {
     (async () => {
@@ -41,26 +40,20 @@ export const useNotifications = (userId: string | undefined) => {
     (async () => {
       try {
         await catchUpMissedDays(userId);
-        const active = await listActiveIntentions(userId);
         await cancelAll();
-        const today = todayISO();
-        for (const it of active) {
-          if (today >= it.startDate && today <= it.currentEndDate) {
-            await scheduleIntentionNotifications(it, notificationTime);
-          }
-        }
+        if (!notificationsEnabled) return;
+        const active = await listActiveIntentions(userId);
+        await scheduleDailyNotifications(active, notificationTime);
       } catch (e: any) {
         console.warn("catch-up + reschedule failed", e?.message ?? e);
       }
     })();
-  }, [userId, notificationTime]);
+  }, [userId, notificationTime, notificationsEnabled]);
 
   useEffect(() => {
     if (!userId) return;
     const sub = Notifications.addNotificationResponseReceivedListener(async (resp) => {
       const action = resp.actionIdentifier;
-      const intentionId = (resp.notification.request.content.data as { intentionId?: string })
-        ?.intentionId;
       const today = todayISO();
 
       try {
@@ -77,10 +70,18 @@ export const useNotifications = (userId: string | undefined) => {
         }
 
         if (action === "NOT_PRAYED") {
-          if (!intentionId) return;
-          const intention = await getIntention(userId, intentionId);
-          if (!intention) return;
-          await extendIntentionByOneDay(userId, intention);
+          const active = await listActiveIntentions(userId);
+          const todays = active.filter((i) => i.startDate <= today && today <= i.currentEndDate);
+          for (const it of todays) {
+            const prayed = it.prayedDates ?? [];
+            if (prayed.includes(today)) continue;
+            await extendIntentionByOneDay(userId, it);
+          }
+          await cancelAll();
+          if (notificationsEnabled) {
+            const updated = await listActiveIntentions(userId);
+            await scheduleDailyNotifications(updated, notificationTime);
+          }
           return;
         }
       } catch (e: any) {
@@ -88,14 +89,13 @@ export const useNotifications = (userId: string | undefined) => {
       }
     });
     return () => sub.remove();
-  }, [userId]);
+  }, [userId, notificationTime, notificationsEnabled]);
 
   const rescheduleAll = async () => {
     await cancelAll();
-    for (const it of intentions) {
-      if (!it.active) continue;
-      await scheduleIntentionNotifications(it, notificationTime);
-    }
+    if (!notificationsEnabled) return;
+    const active = intentions.filter((it) => it.active);
+    await scheduleDailyNotifications(active, notificationTime);
   };
 
   return { rescheduleAll };

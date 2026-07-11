@@ -37,7 +37,7 @@ const accountYear = (user: { metadata?: { creationTime?: string } } | null | und
 export default function ProfileScreen() {
   const router = useRouter();
   const { user, signOut } = useAuth();
-  const { notificationTime } = useSettingsStore();
+  const { notificationTime, notificationsEnabled } = useSettingsStore();
   const { setSettings } = useSettings(user?.uid);
   // const { googleCalendarConnected } = useSettingsStore();
   // const { connect, syncBirthdays, googleCalendarRequestReady } = useGoogleCalendar();
@@ -97,9 +97,26 @@ export default function ProfileScreen() {
 
         <SectionTitle title="Rituals & Preferences" />
         <View style={styles.card}>
-          <Pressable onPress={() => setTimeModal(true)} style={styles.rowItem}>
+          <View style={styles.rowItem}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.itemTitle}>Evening Reflection</Text>
+              <Text style={styles.itemTitle}>Evening Reflection Notifications</Text>
+              <Text style={styles.itemSub}>Nightly reminder of prayer requests left for today.</Text>
+            </View>
+            <Pressable
+              onPress={() => setSettings({ notificationsEnabled: !notificationsEnabled })}
+              style={[styles.toggleTrack, notificationsEnabled && styles.toggleTrackOn]}
+            >
+              <View style={[styles.toggleThumb, notificationsEnabled && styles.toggleThumbOn]} />
+            </Pressable>
+          </View>
+
+          <Pressable
+            onPress={() => setTimeModal(true)}
+            disabled={!notificationsEnabled}
+            style={[styles.rowItem, !notificationsEnabled && { opacity: 0.4 }]}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={styles.itemTitle}>Evening Reflection Time</Text>
               <Text style={styles.itemSub}>Daily gentle reminder to close the day.</Text>
             </View>
             <View style={styles.timeBox}>
@@ -107,7 +124,6 @@ export default function ProfileScreen() {
               <Feather name="clock" size={14} color={colors.mutedText} />
             </View>
           </Pressable>
-
         </View>
 
         <SectionTitle title="Journal" />
@@ -191,6 +207,27 @@ const styles = StyleSheet.create({
   sectionLine: { height: 1, backgroundColor: colors.mutedText, opacity: 0.3 },
   card: { backgroundColor: colors.surface, borderRadius: radius.card, padding: spacing.lg },
   rowItem: { flexDirection: "row", alignItems: "center", gap: spacing.md, paddingVertical: spacing.sm },
+  toggleTrack: {
+    width: 48,
+    height: 28,
+    borderRadius: radius.tag,
+    borderWidth: 1,
+    borderColor: colors.mutedText,
+    backgroundColor: colors.background,
+    padding: 2,
+    justifyContent: "center",
+  },
+  toggleTrackOn: { borderColor: colors.accent, backgroundColor: colors.accent },
+  toggleThumb: {
+    width: 22,
+    height: 22,
+    borderRadius: radius.tag,
+    backgroundColor: colors.mutedText,
+  },
+  toggleThumbOn: {
+    backgroundColor: colors.primaryText,
+    transform: [{ translateX: 20 }],
+  },
   navRow: {
     flexDirection: "row",
     alignItems: "center",

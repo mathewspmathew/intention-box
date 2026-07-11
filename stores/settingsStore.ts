@@ -7,6 +7,7 @@ type SettingsState = UserSettings & {
 
 export const useSettingsStore = create<SettingsState>((set) => ({
   notificationTime: "22:00",
+  notificationsEnabled: true,
   googleCalendarConnected: false,
   historyRetentionDays: 30,
   setSettings: (patch) => set((s) => ({ ...s, ...patch })),

@@ -28,6 +28,7 @@ export type NotificationAction = "prayed" | "not_prayed" | "ignored";
 
 export type UserSettings = {
   notificationTime: string;
+  notificationsEnabled: boolean;
   googleCalendarConnected: boolean;
   // 0 = no history (don't archive). >0 = archive + auto-delete after N days.
   historyRetentionDays: number;
