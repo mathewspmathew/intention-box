@@ -21,5 +21,5 @@ export default function Index() {
     );
   }
 
-  return user ? <Redirect href="/(tabs)/calendar" /> : <Redirect href="/(auth)/sign-in" />;
+  return user ? <Redirect href="/(tabs)/today" /> : <Redirect href="/(auth)/sign-in" />;
 }

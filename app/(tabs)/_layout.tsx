@@ -21,20 +21,20 @@ export default function TabsLayout() {
       }}
     >
       <Tabs.Screen
-        name="calendar"
-        options={{
-          title: "Calendar",
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="calendar-month-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="today"
         options={{
           title: "Today",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="star-four-points-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="calendar"
+        options={{
+          title: "Calendar",
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="calendar-month-outline" size={size} color={color} />
           ),
         }}
       />

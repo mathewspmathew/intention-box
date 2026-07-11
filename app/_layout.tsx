@@ -33,7 +33,7 @@ export default function RootLayout() {
     if (loading || !fontsLoaded) return;
     const inAuth = segments[0] === "(auth)";
     if (!user && !inAuth) router.replace("/(auth)/sign-in");
-    else if (user && inAuth) router.replace("/(tabs)/calendar");
+    else if (user && inAuth) router.replace("/(tabs)/today");
   }, [user, loading, fontsLoaded, segments, router]);
 
   if (!fontsLoaded) {
