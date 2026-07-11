@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { View, Text, Pressable, ScrollView, StyleSheet, Alert, Image } from "react-native";
+import { View, Text, Pressable, ScrollView, StyleSheet, Image } from "react-native";
 import { Ionicons, Feather } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import * as Notifications from "expo-notifications";
 import { useAuth } from "../../hooks/useAuth";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { useSettings } from "../../hooks/useSettings";
@@ -10,11 +9,6 @@ import { useSettings } from "../../hooks/useSettings";
 // import { useGoogleCalendar } from "../../hooks/useGoogleCalendar";
 import { NotificationTimeModal } from "../../components/NotificationTimeModal";
 import { TopBarSpacer } from "../../components/TopBarSpacer";
-import {
-  NOTIFICATION_CATEGORY,
-  NOTIFICATION_CHANNEL,
-  setupNotificationCategory,
-} from "../../services/notificationService";
 import { colors, fonts, fontSize, radius, spacing } from "../../constants/theme";
 
 const formatTime12 = (hhmm: string) => {
@@ -47,39 +41,6 @@ export default function ProfileScreen() {
   //   const ok = await connect();
   //   if (ok) await setSettings({ googleCalendarConnected: true });
   // };
-
-  const testNotification = async () => {
-    try {
-      await setupNotificationCategory();
-      const perms = await Notifications.getPermissionsAsync();
-      let status = perms.status;
-      if (status !== "granted") {
-        const req = await Notifications.requestPermissionsAsync();
-        status = req.status;
-      }
-      if (status !== "granted") {
-        Alert.alert("Permission required", "Notification permission is denied. Enable it in Settings → Apps → Expo Go → Notifications.");
-        return;
-      }
-      const id = await Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Evening Reflection (test)",
-          body: "If you see this, notifications are working.",
-          categoryIdentifier: NOTIFICATION_CATEGORY,
-          color: colors.accent,
-          data: { test: true },
-        },
-        trigger: { seconds: 5, channelId: NOTIFICATION_CHANNEL } as any,
-      });
-      const pending = await Notifications.getAllScheduledNotificationsAsync();
-      Alert.alert(
-        "Scheduled",
-        `id: ${id}\nstatus: ${status}\npending count: ${pending.length}\nFires in ~5s. Background the app with Home if you want to see it as a system notification.`,
-      );
-    } catch (e: any) {
-      Alert.alert("Schedule failed", e?.message ?? String(e));
-    }
-  };
 
   return (
     <View style={styles.container}>
@@ -154,12 +115,6 @@ export default function ProfileScreen() {
           </Pressable>
         )}
         */}
-
-        <SectionTitle title="Debug" />
-        <Pressable onPress={testNotification} style={styles.debugBtn}>
-          <Feather name="bell" size={18} color={colors.accent} />
-          <Text style={styles.debugText}>Test Notification (5s)</Text>
-        </Pressable>
 
         <Pressable onPress={signOut} style={styles.signOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
@@ -258,17 +213,6 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
   },
   connectText: { color: colors.background, fontWeight: "700", fontSize: fontSize.md, letterSpacing: 0.5 },
-  debugBtn: {
-    borderWidth: 1,
-    borderColor: colors.accent,
-    borderRadius: radius.card,
-    paddingVertical: spacing.md,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  debugText: { color: colors.accent, fontWeight: "700", fontSize: fontSize.md, letterSpacing: 0.5 },
   signOut: { alignSelf: "center", marginTop: spacing.xxxl, paddingVertical: spacing.sm },
   signOutText: { color: colors.mutedText, fontSize: fontSize.sm, textDecorationLine: "underline" },
 });
