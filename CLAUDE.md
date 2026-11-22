@@ -1,7 +1,9 @@
 # CLAUDE.md — Intention Box App
 
 > Hand this file to Claude Code at the start of every session.
-> It contains the full project context, architecture, data models, and coding rules.
+> It describes the app **as it is implemented today** (verified against the code), plus the coding rules.
+> **Keep it current:** whenever a change alters behaviour, structure, settings, dependencies or known gaps,
+> update the relevant section of this file in the same change.
 
 ---
 
@@ -9,10 +11,10 @@
 
 **Intention Box** is a calendar-centric personal prayer intentions tracker.
 Users log intentions with a duration (e.g. 10 days). The app shows those intentions
-as tags on each day of the calendar for that duration. Each day, a notification at
-10 PM asks the user: "Prayed / Not Prayed." If prayed, that day is marked done and
-the intention continues normally. If not prayed (or notification ignored), the
-intention is extended by one extra day. The app syncs across devices via Firebase.
+as marks on each day of the calendar for that duration. Each evening (default 10 PM) a single
+notification says how many prayer requests are still left for the day, with **Prayed / Not Prayed**
+actions (Android). Prayed days are ticked off; days that are not prayed push the intention's end
+date out by one day. The app syncs across devices via Firebase.
 
 ---
 
@@ -20,29 +22,32 @@ intention is extended by one extra day. The app syncs across devices via Firebas
 
 | Layer | Choice |
 |---|---|
-| Framework | React Native, Expo Managed Workflow |
-| Language | TypeScript |
+| Framework | React Native 0.81 / Expo SDK 54, **prebuild (CNG)** — `android/` is generated and gitignored; runs as a dev client / native build, not Expo Go |
+| Language | TypeScript (`npm run typecheck`) |
 | Navigation | Expo Router (file-based) |
-| State Management | Zustand (lightweight, two stores) |
-| Backend / Auth | Firebase (Firestore + Firebase Auth) |
-| Local Storage | AsyncStorage (non-sensitive), expo-secure-store (OAuth tokens) |
-| Notifications | expo-notifications + expo-task-manager |
+| State Management | Zustand (3 stores) |
+| Backend / Auth | Firebase JS SDK (Firestore + Auth), signed in via native `@react-native-google-signin/google-signin` → `signInWithCredential` |
+| Local Storage | AsyncStorage (Firebase auth persistence, widget snapshot) |
+| Notifications | expo-notifications (category + channel) |
+| Background | expo-task-manager + **expo-background-task** (not background-fetch) |
 | Calendar UI | react-native-calendars |
 | Date Utilities | date-fns |
-| Bottom Sheet | react-native-bottom-sheet |
-| Google Calendar | expo-auth-session (OAuth2, read-only scope) |
+| Bottom Sheet | `@gorhom/bottom-sheet` v5 (needs gesture-handler + reanimated 4 / worklets) |
+| Widget | react-native-android-widget (Android only) |
 
 ---
 
 ## Coding Standards
 
 - Functional components with arrow syntax only: `const MyComponent = () => {}`
+  (note: the Expo Router screen files currently use `export default function X()` — that is the existing convention for route files; use arrow syntax everywhere else)
 - TypeScript `type` only — never `interface`
 - All styling via inline `StyleSheet` objects — no styled-components, no Tailwind
 - Business logic extracted into custom hooks inside `hooks/`
 - No class components anywhere
 - All async operations wrapped in try/catch with user-facing error handling
 - Use `date-fns` for all date arithmetic — never raw JS Date math
+  (dates are local-time `"YYYY-MM-DD"` strings; helpers live in `utils/dateUtils.ts`)
 
 ---
 
@@ -58,119 +63,94 @@ Danger:       #C0392B  (delete, error states)
 Success:      #27AE60  (prayed confirmation)
 ```
 
-- Headings: Playfair Display or Cormorant Garamond
-- Body: DM Sans
+- Headings: Playfair Display (`PlayfairDisplay_600SemiBold` / `_700Bold`). Body: DM Sans (`DMSans_400Regular` / `_500Medium`). Loaded in `app/_layout.tsx`.
 - Border radius: 12px for cards, 8px for tags/pills, 24px for buttons
 - Spacing scale: 4, 8, 12, 16, 24, 32, 48px
+- Tokens live in `constants/theme.ts` (`colors`, `spacing`, `radius`, `fonts`, `fontSize`) — import from there.
+- The widget (`components/widget/TodayWidget.tsx`) duplicates the colour values in a local `COLORS` const because it renders outside the normal RN tree.
+- Stitch design mockups: `stitch_intention_box_prayer_tracker/` (HTML + PNG, `DESIGN.md`). Reference only.
 
 ---
 
-## Project Folder Structure
+## Project Folder Structure (actual)
 
 ```
-intention-box/
-├── app/                          # Expo Router screens
-│   ├── _layout.tsx               # Root layout, auth gate, notification setup
-│   ├── (auth)/
-│   │   └── sign-in.tsx           # Google Sign-In screen
-│   └── (tabs)/
-│       ├── _layout.tsx           # Bottom tab navigator (3 tabs)
-│       ├── calendar.tsx          # Screen 1 — Calendar view
-│       ├── today.tsx             # Screen 2 — Today's intentions
-│       └── profile.tsx           # Screen 3 — Settings & history
-│
-├── components/
-│   ├── AddIntentionSheet.tsx     # Bottom sheet: Intention text + Days inputs
-│   ├── IntentionCard.tsx         # Single intention row (text, days left, Prayed btn)
-│   ├── IntentionTag.tsx          # Small gold tag shown on calendar days
-│   ├── BirthdayTag.tsx           # Read-only birthday tag (cake icon)
-│   ├── DayModal.tsx              # Modal shown when tapping a calendar day
-│   ├── GlobalAddButton.tsx       # Floating "+" FAB on Calendar screen
-│   └── NotificationTimeModal.tsx # Time picker for notification preference
-│
-├── hooks/
-│   ├── useIntentions.ts          # CRUD, expiry logic, prayed/not-prayed actions
-│   ├── useCalendarData.ts        # Merges intentions + birthdays into calendar marks
-│   ├── useNotifications.ts       # Schedule, cancel, reschedule notifications
-│   ├── useGoogleCalendar.ts      # OAuth connect, birthday fetch, sync
-│   └── useAuth.ts                # Firebase auth state, sign in, sign out
-│
-├── stores/
-│   ├── intentionStore.ts         # Zustand — active intentions, CRUD
-│   ├── calendarStore.ts          # Zustand — merged calendar view data
-│   └── settingsStore.ts          # Zustand — notificationTime, historyEnabled
-│
-├── services/
-│   ├── firebase.ts               # Firebase app init, Firestore instance
-│   ├── intentionService.ts       # Firestore reads/writes for intentions
-│   ├── historyService.ts         # Firestore reads/writes for history
-│   └── notificationService.ts    # expo-notifications setup and scheduling
-│
-├── tasks/
-│   └── midnightTask.ts           # expo-task-manager background task
-│                                 # Runs at midnight: expires intentions,
-│                                 # reschedules next-day notifications
-│
-├── types/
-│   └── index.ts                  # All shared TypeScript types
-│
-├── constants/
-│   └── theme.ts                  # Colors, spacing, font sizes
-│
-├── utils/
-│   ├── dateUtils.ts              # date-fns helpers (getDateRange, isToday, etc.)
-│   └── notificationUtils.ts      # Build notification content strings
-│
-└── assets/
-    └── fonts/                    # Playfair Display, DM Sans
+app/                              # Expo Router
+├── _layout.tsx                   # Root: fonts, useAuth, useSettings, useNotifications, auth redirect,
+│                                 #   imports tasks/midnightTask + tasks/widgetTask for side effects
+├── index.tsx                     # Redirects to /(tabs)/today or /(auth)/sign-in
+├── completed.tsx                 # Completed-intentions history (retention picker, clear-all)
+├── (auth)/sign-in.tsx            # "Continue with Google"
+└── (tabs)/
+    ├── _layout.tsx               # Tabs in order: Today, Calendar, Profile
+    ├── today.tsx                 # Today's intentions + "Mark all as Prayed"
+    ├── calendar.tsx              # Month calendar + DayModal
+    └── profile.tsx               # Notification toggle/time, link to Completed, sign out
+
+components/
+├── AddIntentionSheet.tsx         # Bottom sheet: add/edit (text, 1/3/7/custom days), Prayed + delete when editing
+├── IntentionCard.tsx             # Row: text, "N DAYS REMAINING", prayed state, edit icon
+├── IntentionTag.tsx              # Small gold tag (currently unused by screens)
+├── BirthdayTag.tsx               # Birthday tag (unused — birthdays feature disabled)
+├── DayModal.tsx                  # Tap a non-today calendar day: list + delete (with confirm)
+├── GlobalAddButton.tsx           # Full-width bottom "Add Intention" button (not a floating FAB)
+├── NotificationTimeModal.tsx     # 12-hour stepper time picker
+├── ConfirmModal.tsx              # Themed confirm dialog (used for clear-all history)
+├── SacredHeader.tsx              # Header bar (currently unused by screens)
+├── TopBarSpacer.tsx              # Top spacer used by tab screens
+└── widget/
+    ├── TodayWidget.tsx           # Widget UI (react-native-android-widget JSX)
+    └── TodayWidgetTask.tsx       # Widget task handler: reads snapshot, renders widget
+
+hooks/
+├── useAuth.ts                    # Auth state, Google sign-in/out; calls updateWidget on auth change
+├── useIntentions.ts              # Subscribes to Firestore; add/edit/remove/markPrayed/markNotPrayed
+├── useNotifications.ts           # Root-level: permissions, category, catch-up, reschedule, action listener
+├── useSettings.ts                # Loads/subscribes user settings doc → settingsStore; setSettings
+├── useCalendarData.ts            # Intentions → per-day map + calendar dot marks
+└── useGoogleCalendar.ts          # Birthday sync — DISABLED (not imported anywhere)
+
+stores/  intentionStore.ts · calendarStore.ts · settingsStore.ts   (Zustand)
+services/
+├── firebase.ts                   # Firebase init (env-driven), RN auth persistence, Firestore w/ long polling
+├── intentionService.ts           # Firestore CRUD, onSnapshot subscribe, catchUpMissedDays
+├── historyService.ts             # archive / list / delete / prune history
+├── settingsService.ts            # users/{uid} doc: ensure defaults, update, subscribe
+├── notificationService.ts        # Channel + category, schedule per-day notifications, cancelAll
+└── widgetService.tsx             # Build snapshot, persist to AsyncStorage, requestWidgetUpdate
+tasks/  midnightTask.ts (expo-background-task) · widgetTask.ts (registers widget handler, Android)
+types/index.ts · constants/theme.ts · utils/dateUtils.ts · utils/notificationUtils.ts
+firestore.rules · firebase.json · .firebaserc · .env.example
 ```
 
 ---
 
-## TypeScript Types
+## TypeScript Types (`types/index.ts`)
 
 ```ts
-// types/index.ts
-
 type Intention = {
-  id: string;
-  userId: string;
-  text: string;
-  startDate: string;        // ISO date "YYYY-MM-DD"
-  durationDays: number;     // original number entered by user
-  currentEndDate: string;   // ISO date — can be extended by "Not Prayed"
+  id: string; userId: string; text: string;
+  startDate: string;        // "YYYY-MM-DD"
+  durationDays: number;     // as entered by user
+  currentEndDate: string;   // derived — see "End-date extension" below
   active: boolean;
   savedToHistory: boolean;
-  createdAt: number;        // Unix timestamp
+  createdAt: number;
+  prayedDates?: string[];   // days marked prayed
 };
 
-type HistoryEntry = {
-  id: string;
-  userId: string;
-  text: string;
-  startDate: string;
-  completedDate: string;
-  totalDays: number;
-};
-
-type DayIntentions = {
-  [dateString: string]: Intention[]; // key: "YYYY-MM-DD"
-};
-
-type NotificationAction = "prayed" | "not_prayed" | "ignored";
+type HistoryEntry = { id; userId; text; startDate; completedDate; totalDays };
+type DayIntentions = { [dateString: string]: Intention[] };
+type NotificationAction = "prayed" | "not_prayed" | "ignored";   // (declared, not used in code)
 
 type UserSettings = {
-  notificationTime: string;  // "HH:MM" 24hr format, default "22:00"
-  historyEnabled: boolean;
-  googleCalendarConnected: boolean;
+  notificationTime: string;       // "HH:MM" 24h, default "22:00"
+  notificationsEnabled: boolean;  // default true
+  googleCalendarConnected: boolean; // default false (feature disabled)
+  historyRetentionDays: number;   // 0 = don't archive; >0 = archive + auto-delete after N days. Default 30. UI offers 7 / 30.
 };
 
-type Birthday = {
-  id: string;
-  name: string;
-  date: string;             // "YYYY-MM-DD"
-  isRecurring: boolean;
-};
+type Birthday = { id; name; date; isRecurring };  // unused while birthdays disabled
 ```
 
 ---
@@ -178,301 +158,142 @@ type Birthday = {
 ## Firestore Data Structure
 
 ```
-users/{userId}/
-  document: {
-    notificationTime: "22:00",
-    historyEnabled: false,
-    googleCalendarConnected: false
-  }
-
-users/{userId}/intentions/{intentionId}/
-  document: Intention (see type above)
-
-users/{userId}/history/{intentionId}/
-  document: HistoryEntry (see type above)
+users/{userId}                       → UserSettings (doc is created with defaults by ensureSettingsDoc)
+users/{userId}/intentions/{id}       → Intention
+users/{userId}/history/{id}          → HistoryEntry
 ```
 
-**Rules:**
-- All reads/writes scoped to authenticated `userId` only
-- Use Firestore real-time listeners (`onSnapshot`) so intentions sync instantly across devices
-- Write to Firestore first, then update local Zustand store on success
+- Rules (`firestore.rules`): everything under `users/{userId}` is readable/writable only when `request.auth.uid == userId`.
+- `subscribeIntentions` / `subscribeSettings` use `onSnapshot` for cross-device sync.
+- Writes go to Firestore; the intention store is refreshed by the snapshot listener (not optimistically). Settings are written optimistically to the store, then Firestore.
+- `firebase.ts` forces long-polling (`experimentalForceLongPolling`) for RN reliability.
 
 ---
 
-## Core Logic — Intention Lifecycle
+## Core Logic
 
-### Creating an intention
-1. User taps "+" → bottom sheet opens
-2. User enters `text` and `durationDays`
-3. On save:
-   - `startDate` = today (local date)
-   - `currentEndDate` = startDate + durationDays - 1
-   - Write to Firestore under `users/{userId}/intentions/`
-   - Zustand store updates via `onSnapshot` listener
-   - Schedule notifications for each day from startDate to currentEndDate
+### Create
+`createIntention`: `startDate` = today, `currentEndDate` = start + durationDays − 1, `active: true`. Then notifications are rescheduled.
 
-### Daily expiry (runs at midnight via background task)
-1. For each active intention, check if yesterday's date < `currentEndDate`
-2. If today is past `currentEndDate`:
-   - If `historyEnabled`: write to history collection first
-   - Set `active: false` in Firestore (or delete document)
-3. Reschedule today's notifications for remaining active intentions
+### Edit
+`useIntentions.edit` — changing `durationDays` recomputes `currentEndDate` = `startDate + duration − 1` (never earlier than today) and reschedules notifications. Text-only edits don't touch dates.
 
-### Notification response logic
-- **Prayed**: mark today as done for that intention. Intention continues for remaining days normally. If it was the last day, archive/delete per history setting.
-- **Not Prayed**: extend `currentEndDate` by +1 day in Firestore. Update calendar marks.
-- **Ignored / dismissed** (no tap by midnight): treat as "Not Prayed" — extend `currentEndDate` by +1.
+### Prayed (in app) — `markPrayed`
+Appends today to `prayedDates`. If today ≥ `currentEndDate` (last day): archive to history (unless `historyRetentionDays === 0`) and delete the intention. Today screen has "Mark all as Prayed"; single-intention Prayed is inside the edit sheet.
+
+### End-date extension (important)
+`currentEndDate` is **derived, not just incremented**. `catchUpMissedDays` (`intentionService.ts`) sets
+`currentEndDate = startDate + durationDays − 1 + (number of past days up to yesterday that are not in prayedDates)`.
+It runs on app start / sign-in (in `useNotifications`) and in the midnight task. The "Not Prayed" action additionally
+bumps `currentEndDate` by +1 immediately (`extendIntentionByOneDay`), and catch-up reconciles it later. A missed/ignored
+day therefore extends the intention automatically, even if no notification button was tapped.
+
+### Expiry / history (midnight task)
+For each active intention with `currentEndDate` before today: archive to history (if retention ≠ 0) and delete it.
+History is pruned (older than `historyRetentionDays`) when the Completed screen is opened. Clear-all deletes every history doc.
 
 ---
 
-## Notifications (Android Action Buttons)
+## Notifications
 
-Use `expo-notifications` notification categories:
-
-```ts
-// Set up once on app launch
-await Notifications.setNotificationCategoryAsync("INTENTION_CATEGORY", [
-  {
-    identifier: "PRAYED",
-    buttonTitle: "🤲 Prayed",
-    options: { isDestructive: false, isAuthenticationRequired: false }
-  },
-  {
-    identifier: "NOT_PRAYED",
-    buttonTitle: "Not today",
-    options: { isDestructive: false, isAuthenticationRequired: false }
-  }
-]);
-```
-
-- **Android only** for action buttons — iOS shows informational notification only
-- Schedule one notification per active intention per day
-- Notification content: intention text + "Day X of Y"
-- Default time: 22:00 (user can change in Settings)
-- At midnight, background task checks for ignored notifications and extends accordingly
+- **One consolidated notification per day** (not per intention): title "Evening Reflection", body "You have N prayer request(s) left for praying." where N = unprayed intentions covering that day. Built in `utils/notificationUtils.ts`.
+- `scheduleDailyNotifications` computes N for every day in each intention's range (skipping prayed days and past times) and schedules DATE triggers at the user's `notificationTime`. Everything is cancelled and re-scheduled (`cancelAll`) on any change.
+- Android channel `evening-reflection` (HIGH importance). Category `INTENTION_CATEGORY` with actions `PRAYED` ("Prayed") and `NOT_PRAYED` ("Not Prayed"); neither opens the app. iOS shows an informational notification only.
+- Response listener (`useNotifications`): `PRAYED` → marks **all** of today's not-yet-prayed intentions prayed (no archive on last day — the midnight task cleans up later). `NOT_PRAYED` → extends each unprayed intention by +1 and reschedules.
+- Master toggle `notificationsEnabled` (Profile) cancels everything when off. `SCHEDULE_EXACT_ALARM` permission is declared in `app.json`.
+- Permissions requested on launch in `useNotifications`.
 
 ---
 
-## Screens — Detailed Behaviour
+## Screens
 
-### Screen 1 — Calendar (`app/(tabs)/calendar.tsx`)
-- Full monthly calendar using `react-native-calendars`
-- Gold dot/tag on each day that has active intentions
-- Birthday entries shown with a 🎂 icon (read-only, cannot tap to edit)
-- Tapping today → navigate to Today's Intentions tab
-- Tapping another day → open `DayModal` showing that day's intentions (read-only view)
-- Floating "+" button (`GlobalAddButton`) always visible bottom-right
-- Pressing "+" opens `AddIntentionSheet`
-
-### Screen 2 — Today's Intentions (`app/(tabs)/today.tsx`)
-- Lists all active intentions where today is between `startDate` and `currentEndDate`
-- Each `IntentionCard` shows:
-  - Intention text
-  - Days remaining (e.g. "Day 3 of 10")
-  - **Prayed** button → marks as prayed, removes today from calendar
-  - **Edit** icon → opens `AddIntentionSheet` pre-filled (text + remaining days editable)
-- Empty state: "No intentions for today. Tap + to add one."
-
-### Screen 3 — Profile / Settings (`app/(tabs)/profile.tsx`)
-- Notification time picker (opens `NotificationTimeModal`)
-- History toggle (on/off) — if turned on mid-session, future completions are saved
-- "Connect Google Calendar" button → triggers OAuth flow
-- "Sync Birthdays" button (shown after connect)
-- History section (shown only if `historyEnabled: true`) — flat list of `HistoryEntry`
-- "Sign Out" button at bottom
+- **Today** (`(tabs)/today`, initial tab): intentions where `startDate ≤ today ≤ currentEndDate`. `IntentionCard` shows text, "N DAYS REMAINING", a Prayed/Completed pill once prayed, and an edit icon (hidden once prayed). "Mark all as Prayed" button; empty state "No intentions for today. Tap + to add one."
+- **Calendar** (`(tabs)/calendar`): month view, gold dot on days with remaining (unprayed) intentions; today is outlined. Tap today → Today tab; tap other day → `DayModal` (list with delete + confirm). "Today" button resets month. "Add Intention" button at bottom opens the sheet.
+- **Profile** (`(tabs)/profile`): avatar/email, notifications on/off toggle, notification time (modal, disabled when off), link to Completed Intentions, Sign Out. The Google Calendar "Connections" block is commented out.
+- **Completed** (`/completed`): history list newest-first, "auto-delete after" picker (7 days / 1 month), broom button → ConfirmModal → clear all.
+- **Sign-in** (`(auth)/sign-in`): single "Continue with Google" button, shows error text.
+- Auth gate lives in `app/_layout.tsx` (`useSegments` + `router.replace`).
 
 ---
 
-## Authentication Flow
+## Authentication
 
 ```
-App opens
-  └─ Check Firebase auth state (useAuth hook)
-       ├─ Not signed in → redirect to (auth)/sign-in.tsx
-       │     └─ "Continue with Google" button
-       │           └─ expo-auth-session Google OAuth
-       │                 └─ Firebase signInWithCredential
-       │                       └─ On success → redirect to (tabs)/calendar
-       └─ Signed in → proceed to (tabs) directly
+App opens → useAuth (onAuthStateChanged)
+  ├─ no user → (auth)/sign-in → GoogleSignin.signIn() → idToken → signInWithCredential
+  └─ user    → (tabs)/today
 ```
 
-- First launch after sign-in: show history preference modal ("Save intention history?")
-- Store preference in Firestore under `users/{userId}` document
+- Needs `EXPO_PUBLIC_FIREBASE_GOOGLE_WEB_CLIENT_ID` (web client ID) for `GoogleSignin.configure`.
+- The old "first-launch history preference modal" was **not** built; history is governed by `historyRetentionDays` (default 30).
+- Sign-out: `firebase signOut`; the auth listener triggers a widget refresh.
 
 ---
 
-## Google Calendar Integration
+## Android Home-Screen Widget (implemented)
 
-- Scope: `https://www.googleapis.com/auth/calendar.readonly`
-- On connect: fetch events with `eventType: "birthday"` or title containing "birthday"
-- Map to local `Birthday[]` array, store in AsyncStorage (not Firestore — read-only reference data)
-- Token stored in `expo-secure-store`
-- Sync button: re-fetches and overwrites local birthday data
-- Birthday tags shown on calendar — not editable, not deletable inside the app
+4×2-ish (`minWidth 250dp / minHeight 110dp`, not resizable, `updatePeriodMillis` 30 min). Read-only; tapping anywhere opens `intentionbox://today` (`clickAction="OPEN_URI"`), which Expo Router resolves to `(tabs)/today` — there is no custom deep-link handler.
+
+```
+updateWidget() (services/widgetService.tsx)
+  → builds WidgetSnapshot from the Zustand intention store + auth.currentUser
+  → AsyncStorage["@intentionbox/widget-snapshot"]
+  → requestWidgetUpdate({ widgetName: "TodayWidget", renderWidget })
+Widget task handler (TodayWidgetTask.tsx) → readSnapshot() → render
+```
+
+- Snapshot: `{ signedIn, date: "EEE, MMM d", intentions: string[] (text only, by createdAt), updatedAt }`. Empty states: "No intentions today", "Open app to sign in".
+- The snapshot is built from the in-memory store (no Firestore read), so the store must be populated; it is filled by `subscribeIntentions` whenever a screen using `useIntentions` is mounted.
+- `updateWidget()` is called from: auth state change (`useAuth`), every intention snapshot (`subscribeIntentions`), and the end of the midnight task. Mutations in `useIntentions` rely on the snapshot listener rather than calling it directly.
+- Widget task handler registered in `tasks/widgetTask.ts` (imported by `app/_layout.tsx`).
 
 ---
 
-## Home-Screen Widget (Android Only)
+## Background Task
 
-A read-only Android home-screen widget that displays today's intentions. Tap-to-open only — no in-widget buttons.
-
-### Spec
-
-- **Platform:** Android only (no iOS in v1)
-- **Size:** 4×2 medium (single size)
-- **Header:** today's date + day of week (e.g. "Tue, May 26")
-- **Body:** scrollable list of today's active intentions, **text only** (no "Day X of Y")
-- **Empty state:** "No intentions today"
-- **Signed-out state:** "Open app to sign in"
-- **Tap anywhere on widget:** deep-link to `(tabs)/today`
-- **Theme:** matches app — bg `#1A1A1A`, accent `#C9A84C`, primary text `#FFFDF5`, muted `#888880`
-
-### Stack additions
-
-| Concern | Choice |
-|---|---|
-| Workflow | Switch from Expo Managed → **Expo Prebuild (CNG)**. Keeps JS code unchanged; generates `android/` folder. Lose Expo Go, use dev client. |
-| Widget library | **`react-native-android-widget`** — widget UI authored in JSX, no Kotlin/XML needed for the widget body itself. |
-| Data bridge | Library's built-in shared storage (writes a JSON blob the widget reads). No direct Firestore / AsyncStorage access from widget process. |
-| Deep linking | `intentionbox://today` scheme; route handled in `app/_layout.tsx`. |
-
-### Data flow
-
-```
-App (JS) ──writes today's snapshot──▶ Shared storage (file)
-                                          │
-                                          ▼
-                                  Widget process reads
-                                          │
-                                          ▼
-                                  Renders list + date
-```
-
-The widget **never** touches Firestore. The app pushes a fresh snapshot whenever today's intentions change.
-
-### Refresh triggers (call `updateWidget()` from these spots)
-
-1. App start (after auth resolves)
-2. Intention created / edited / deleted
-3. Prayed / Not Prayed action
-4. Midnight background task (after expiry + reschedule)
-5. Firestore `onSnapshot` listener fires with new data (cross-device sync)
-6. Sign-in / sign-out
-
-### Files to add
-
-```
-services/widgetService.ts        # updateWidget() — builds snapshot, writes to shared storage,
-                                 # calls library's requestWidgetUpdate()
-components/widget/
-  TodayWidget.tsx                # Widget UI (JSX via react-native-android-widget)
-  TodayWidgetTask.tsx            # Widget task handler (registered with library)
-app.json                         # Add react-native-android-widget config plugin entry
-```
-
-### Files to modify (minimal touches)
-
-| File | Change |
-|---|---|
-| `app/_layout.tsx` | Register widget task; handle `intentionbox://today` deep link |
-| `hooks/useIntentions.ts` | Call `updateWidget()` after each mutation |
-| `hooks/useAuth.ts` | Call `updateWidget()` on sign-in / sign-out |
-| `tasks/midnightTask.ts` | Call `updateWidget()` at end |
-| `services/intentionService.ts` | Call `updateWidget()` inside `onSnapshot` callback |
-
-### Snapshot shape written to shared storage
-
-```ts
-type WidgetSnapshot = {
-  signedIn: boolean;
-  date: string;              // "Tue, May 26"
-  intentions: string[];      // text only, ordered by createdAt
-  updatedAt: number;         // for debugging
-};
-```
-
-### Implementation order
-
-1. Run `npx expo prebuild --platform android` (one-time; generates `android/`)
-2. `npx expo install react-native-android-widget`; add its config plugin to `app.json`
-3. Create `services/widgetService.ts` with `updateWidget()` stub (writes mock data)
-4. Build `components/widget/TodayWidget.tsx` — header + scrollable list + empty/signed-out states
-5. Register widget task in `app/_layout.tsx`
-6. Wire `updateWidget()` into the 6 trigger points above
-7. Add `intentionbox://` scheme to `app.json`; handle deep link to `(tabs)/today`
-8. Test: install dev client, add widget to home screen, verify all triggers refresh it
-
-### Notes
-
-- Widget runs in a separate Android process — no React context, no Zustand, no Firebase available there. All data comes through the shared-storage snapshot.
-- Keep `updateWidget()` cheap; it runs often. Build the snapshot from in-memory Zustand state, not by re-reading Firestore.
-- If shared storage is empty (fresh install, never written), the widget should render the signed-out state.
+`tasks/midnightTask.ts` defines `MIDNIGHT_TASK` with `expo-task-manager` and registers it with `expo-background-task` (`minimumInterval: 60` min; the OS decides the real cadence — it is **not** exactly midnight). It: waits for `auth.authStateReady()` (headless starts have no restored user yet) → loads the user's settings from Firestore via `getSettings` (the Zustand settings store holds only defaults in a headless run, so never read it here) → `catchUpMissedDays` → archives/deletes expired intentions → `cancelAll` + reschedule notifications → `updateWidget()`. If the settings read fails the task returns `Failed` (OS retries) rather than acting on defaults. It auto-registers on import (imported from `app/_layout.tsx`).
 
 ---
 
-## Background Task (Midnight Expiry)
+## Google Calendar / Birthdays — DISABLED
 
-```ts
-// tasks/midnightTask.ts
-// Registered as "MIDNIGHT_TASK" via expo-task-manager
-// Triggered by expo-background-fetch
-
-// What it does:
-// 1. Fetch all active intentions for this user from Firestore
-// 2. For each intention where currentEndDate < today:
-//    - If historyEnabled: write HistoryEntry to Firestore
-//    - Delete or mark active:false in Firestore
-// 3. Check yesterday's notifications — if any were not responded to:
-//    - Extend those intentions' currentEndDate by +1
-// 4. Schedule today's notifications for all remaining active intentions
-```
-
-**Register this task in `app/_layout.tsx` outside the React component tree.**
+Commit "Disable Google Calendar connect / birthday sync feature". `hooks/useGoogleCalendar.ts` (Google Sign-In `addScopes` for `calendar.readonly`, token in expo-secure-store, birthdays cached in AsyncStorage) still exists but is not imported; the Profile block and the birthday marks in `useCalendarData` are commented out. `BirthdayTag`, `Birthday` type, `googleCalendarConnected` setting and `calendarStore.birthdays` are leftovers. To restore: uncomment the Profile block/imports and the `useCalendarData` birthday marks.
 
 ---
 
-## Known Gaps to Implement After Stitch
+## Environment & Build
 
-These will likely be incomplete or missing from Stitch output — prioritise these with Claude Code:
-
-1. **Firebase config** — paste your `firebaseConfig` object into `services/firebase.ts`
-2. **Notification categories** — Android action buttons (Prayed / Not Prayed) setup
-3. **Background task registration** — `midnightTask.ts` must be registered in `_layout.tsx`
-4. **Ignored notification detection** — logic to detect no-tap and auto-extend at midnight
-5. **Google Calendar OAuth** — full flow with token refresh
-6. **Firestore security rules** — lock all reads/writes to `request.auth.uid == userId`
-7. **History archival** — ensure history write completes before intention deletion
-
----
-
-## Environment Variables
-
-Create a `.env` file at project root (never commit to git):
+`.env` (gitignored; template in `.env.example`) — all `EXPO_PUBLIC_*`, read in `services/firebase.ts` / `hooks/useAuth.ts`:
 
 ```
-FIREBASE_API_KEY=
-FIREBASE_AUTH_DOMAIN=
-FIREBASE_PROJECT_ID=
-FIREBASE_STORAGE_BUCKET=
-FIREBASE_MESSAGING_SENDER_ID=
-FIREBASE_APP_ID=
-GOOGLE_OAUTH_CLIENT_ID=
-GOOGLE_OAUTH_CLIENT_ID_ANDROID=
-GOOGLE_OAUTH_CLIENT_ID_IOS=
+EXPO_PUBLIC_FIREBASE_API_KEY, _AUTH_DOMAIN, _PROJECT_ID, _STORAGE_BUCKET, _MESSAGING_SENDER_ID, _APP_ID
+EXPO_PUBLIC_FIREBASE_GOOGLE_WEB_CLIENT_ID      # used by GoogleSignin.configure
+EXPO_PUBLIC_GOOGLE_OAUTH_CLIENT_ID_ANDROID / _IOS   # listed in .env.example, not read by code
 ```
-
-Access via `expo-constants` or `process.env` with Expo's built-in env support.
-
----
-
-## Useful Commands
 
 ```bash
-npx expo start              # Start dev server
-npx expo start --android    # Start on Android
-npx tsc                     # TypeScript check
-npx expo install <package>  # Install Expo-compatible package
+npx expo start                  # dev server (needs a dev client build)
+npx expo run:android            # build + run native Android (package com.intentionbox.app)
+npm run typecheck               # tsc --noEmit  (currently clean)
+npx expo install <package>      # Expo-compatible installs
 ```
+
+- `app.json`: scheme `intentionbox`, plugins `expo-router`, `expo-secure-store`, `expo-notifications`, `react-native-android-widget` (TodayWidget), `@react-native-google-signin/google-signin`, `expo-build-properties` (arm64-v8a only; minify + shrink resources in release), `newArchEnabled: true`.
+- `google-services.json` is gitignored (`app/google-services.json`); it is required for native Google Sign-In on Android, and `app.json` has no `googleServicesFile` entry — it was not present in the working tree when this file was last audited. Re-add/wire it before a fresh native build.
+- `*.apk`, `android/`, `ios/` are gitignored.
+
+---
+
+## Known Gaps / Things To Verify
+
+1. **Notification "Prayed" on the last day** does not archive/delete; the intention lingers until the background task runs (and `useIntentions.expireOverdue` exists but is never called).
+2. **Widget lists intentions already prayed today** (it filters by date range only, not `prayedDates`), unlike the Calendar dots and Today card.
+3. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
+4. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
+5. History-preference first-launch modal from the original spec was never implemented.
+6. Unused code/deps: `IntentionTag`, `SacredHeader`, `BirthdayTag`, `useGoogleCalendar`, `NotificationAction`, `rescheduleAll`; packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
+7. No automated tests.
+8. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
 
 ---
 
@@ -481,8 +302,4 @@ npx expo install <package>  # Install Expo-compatible package
 Start each session by saying:
 > "Read CLAUDE.md and then [your task]."
 
-Example prompts:
-- "Read CLAUDE.md and implement the midnight background task in tasks/midnightTask.ts"
-- "Read CLAUDE.md and wire up Firebase auth in hooks/useAuth.ts"
-- "Read CLAUDE.md and build the AddIntentionSheet component"
-- "Read CLAUDE.md and implement the Prayed/Not Prayed Android notification actions"
+When you finish a change, update this file (structure, behaviour, settings, gaps) in the same commit.
