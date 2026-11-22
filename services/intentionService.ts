@@ -53,14 +53,6 @@ export const deleteIntention = async (userId: string, intentionId: string): Prom
   await deleteDoc(doc(intentionsCol(userId), intentionId));
 };
 
-export const extendIntentionByOneDay = async (
-  userId: string,
-  intention: Intention,
-): Promise<void> => {
-  const nextEnd = addDaysISO(intention.currentEndDate, 1);
-  await updateIntention(userId, intention.id, { currentEndDate: nextEnd });
-};
-
 const computeExtendedEnd = (intention: Intention): string => {
   const today = todayISO();
   const yesterday = addDaysISO(today, -1);

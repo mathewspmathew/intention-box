@@ -4,7 +4,6 @@ import { useSettingsStore } from "../stores/settingsStore";
 import {
   createIntention,
   deleteIntention,
-  extendIntentionByOneDay,
   listActiveIntentions,
   subscribeIntentions,
   updateIntention,
@@ -12,7 +11,7 @@ import {
 import { archiveIntention } from "../services/historyService";
 import { cancelAll, scheduleDailyNotifications } from "../services/notificationService";
 import type { Intention } from "../types";
-import { addDaysISO, isPast, todayISO } from "../utils/dateUtils";
+import { addDaysISO, todayISO } from "../utils/dateUtils";
 
 export const useIntentions = (userId: string | undefined) => {
   const { intentions, setIntentions } = useIntentionStore();
@@ -89,24 +88,5 @@ export const useIntentions = (userId: string | undefined) => {
     [userId, historyRetentionDays, rescheduleNotifications],
   );
 
-  const markNotPrayed = useCallback(
-    async (intention: Intention) => {
-      if (!userId) return;
-      await extendIntentionByOneDay(userId, intention);
-      await rescheduleNotifications();
-    },
-    [userId, rescheduleNotifications],
-  );
-
-  const expireOverdue = useCallback(async () => {
-    if (!userId) return;
-    for (const it of intentions) {
-      if (it.active && isPast(it.currentEndDate)) {
-        if (historyRetentionDays !== 0) await archiveIntention(userId, it);
-        await deleteIntention(userId, it.id);
-      }
-    }
-  }, [userId, intentions, historyRetentionDays]);
-
-  return { intentions, add, edit, remove, markPrayed, markNotPrayed, expireOverdue };
+  return { intentions, add, edit, remove, markPrayed };
 };

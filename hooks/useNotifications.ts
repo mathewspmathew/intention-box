@@ -6,7 +6,6 @@ import {
   cancelAll,
   scheduleDailyNotifications,
 } from "../services/notificationService";
-import { useIntentionStore } from "../stores/intentionStore";
 import { useSettingsStore } from "../stores/settingsStore";
 import { catchUpMissedDays, listActiveIntentions } from "../services/intentionService";
 
@@ -20,7 +19,6 @@ Notifications.setNotificationHandler({
 });
 
 export const useNotifications = (userId: string | undefined) => {
-  const { intentions } = useIntentionStore();
   const { notificationTime, notificationsEnabled } = useSettingsStore();
 
   useEffect(() => {
@@ -45,12 +43,4 @@ export const useNotifications = (userId: string | undefined) => {
     })();
   }, [userId, notificationTime, notificationsEnabled]);
 
-  const rescheduleAll = async () => {
-    await cancelAll();
-    if (!notificationsEnabled) return;
-    const active = intentions.filter((it) => it.active);
-    await scheduleDailyNotifications(active, notificationTime);
-  };
-
-  return { rescheduleAll };
 };

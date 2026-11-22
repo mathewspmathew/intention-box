@@ -90,13 +90,11 @@ app/                              # Expo Router
 components/
 ├── AddIntentionSheet.tsx         # Bottom sheet: add/edit (text, 1/3/7/custom days), Prayed + delete when editing
 ├── IntentionCard.tsx             # Row: text, "N DAYS REMAINING", prayed state, edit icon
-├── IntentionTag.tsx              # Small gold tag (currently unused by screens)
 ├── BirthdayTag.tsx               # Birthday tag (unused — birthdays feature disabled)
 ├── DayModal.tsx                  # Tap a non-today calendar day: list + delete (with confirm)
 ├── GlobalAddButton.tsx           # Full-width bottom "Add Intention" button (not a floating FAB)
 ├── NotificationTimeModal.tsx     # 12-hour stepper time picker
 ├── ConfirmModal.tsx              # Themed confirm dialog (used for clear-all history)
-├── SacredHeader.tsx              # Header bar (currently unused by screens)
 ├── TopBarSpacer.tsx              # Top spacer used by tab screens
 └── widget/
     ├── TodayWidget.tsx           # Widget UI (react-native-android-widget JSX)
@@ -104,7 +102,7 @@ components/
 
 hooks/
 ├── useAuth.ts                    # Auth state, Google sign-in/out; calls updateWidget on auth change
-├── useIntentions.ts              # Subscribes to Firestore; add/edit/remove/markPrayed/markNotPrayed
+├── useIntentions.ts              # Subscribes to Firestore; add/edit/remove/markPrayed
 ├── useNotifications.ts           # Root-level: permissions, category, catch-up, reschedule, action listener
 ├── useSettings.ts                # Loads/subscribes user settings doc → settingsStore; setSettings
 ├── useCalendarData.ts            # Intentions → per-day map + calendar dot marks
@@ -287,7 +285,7 @@ npx expo install <package>      # Expo-compatible installs
 2. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
 3. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
 4. History-preference first-launch modal from the original spec was never implemented.
-5. Unused code/deps: `IntentionTag`, `SacredHeader`, `BirthdayTag`, `useGoogleCalendar`, `rescheduleAll`, `useIntentions.markNotPrayed` / `extendIntentionByOneDay` / `expireOverdue` (the notification buttons that used them were removed); packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
+5. Unused code/deps: `BirthdayTag` and `useGoogleCalendar` (kept on purpose for the disabled Google Calendar feature); packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
 6. No automated tests.
 7. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
 
