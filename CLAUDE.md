@@ -12,9 +12,9 @@
 **Intention Box** is a calendar-centric personal prayer intentions tracker.
 Users log intentions with a duration (e.g. 10 days). The app shows those intentions
 as marks on each day of the calendar for that duration. Each evening (default 10 PM) a single
-notification says how many prayer requests are still left for the day, with **Prayed / Not Prayed**
-actions (Android). Prayed days are ticked off; days that are not prayed push the intention's end
-date out by one day. The app syncs across devices via Firebase.
+notification says how many prayer requests are still left for the day (a plain reminder — no action
+buttons; the user marks prayers in the app). Prayed days are ticked off; days that are not prayed push
+the intention's end date out by one day automatically. The app syncs across devices via Firebase.
 
 ---
 
@@ -141,7 +141,6 @@ type Intention = {
 
 type HistoryEntry = { id; userId; text; startDate; completedDate; totalDays };
 type DayIntentions = { [dateString: string]: Intention[] };
-type NotificationAction = "prayed" | "not_prayed" | "ignored";   // (declared, not used in code)
 
 type UserSettings = {
   notificationTime: string;       // "HH:MM" 24h, default "22:00"
@@ -184,9 +183,8 @@ Appends today to `prayedDates`. If today ≥ `currentEndDate` (last day): archiv
 ### End-date extension (important)
 `currentEndDate` is **derived, not just incremented**. `catchUpMissedDays` (`intentionService.ts`) sets
 `currentEndDate = startDate + durationDays − 1 + (number of past days up to yesterday that are not in prayedDates)`.
-It runs on app start / sign-in (in `useNotifications`) and in the midnight task. The "Not Prayed" action additionally
-bumps `currentEndDate` by +1 immediately (`extendIntentionByOneDay`), and catch-up reconciles it later. A missed/ignored
-day therefore extends the intention automatically, even if no notification button was tapped.
+It runs on app start / sign-in (in `useNotifications`) and in the midnight task. This is the **only** mechanism that
+extends an intention: a day not marked prayed extends it automatically once that day has passed (the notification has no buttons).
 
 ### Expiry / history (midnight task)
 For each active intention with `currentEndDate` before today: archive to history (if retention ≠ 0) and delete it.
@@ -198,8 +196,7 @@ History is pruned (older than `historyRetentionDays`) when the Completed screen 
 
 - **One consolidated notification per day** (not per intention): title "Evening Reflection", body "You have N prayer request(s) left for praying." where N = unprayed intentions covering that day. Built in `utils/notificationUtils.ts`.
 - `scheduleDailyNotifications` computes N for every day in each intention's range (skipping prayed days and past times) and schedules DATE triggers at the user's `notificationTime`. Everything is cancelled and re-scheduled (`cancelAll`) on any change.
-- Android channel `evening-reflection` (HIGH importance). Category `INTENTION_CATEGORY` with actions `PRAYED` ("Prayed") and `NOT_PRAYED` ("Not Prayed"); neither opens the app. iOS shows an informational notification only.
-- Response listener (`useNotifications`): `PRAYED` → marks **all** of today's not-yet-prayed intentions prayed (no archive on last day — the midnight task cleans up later). `NOT_PRAYED` → extends each unprayed intention by +1 and reschedules.
+- Android channel `evening-reflection` (HIGH importance), created by `setupNotificationChannel`. **No action buttons and no response listener** — tapping the notification just opens the app. The old `INTENTION_CATEGORY` (Prayed / Not Prayed buttons) was removed; `setupNotificationChannel` deletes it from devices that had registered it.
 - Master toggle `notificationsEnabled` (Profile) cancels everything when off. `SCHEDULE_EXACT_ALARM` permission is declared in `app.json`.
 - Permissions requested on launch in `useNotifications`.
 
@@ -286,14 +283,13 @@ npx expo install <package>      # Expo-compatible installs
 
 ## Known Gaps / Things To Verify
 
-1. **Notification "Prayed" on the last day** does not archive/delete; the intention lingers until the background task runs (and `useIntentions.expireOverdue` exists but is never called).
-2. **Widget lists intentions already prayed today** (it filters by date range only, not `prayedDates`), unlike the Calendar dots and Today card.
-3. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
-4. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
-5. History-preference first-launch modal from the original spec was never implemented.
-6. Unused code/deps: `IntentionTag`, `SacredHeader`, `BirthdayTag`, `useGoogleCalendar`, `NotificationAction`, `rescheduleAll`; packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
-7. No automated tests.
-8. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
+1. **Widget lists intentions already prayed today** (it filters by date range only, not `prayedDates`), unlike the Calendar dots and Today card.
+2. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
+3. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
+4. History-preference first-launch modal from the original spec was never implemented.
+5. Unused code/deps: `IntentionTag`, `SacredHeader`, `BirthdayTag`, `useGoogleCalendar`, `rescheduleAll`, `useIntentions.markNotPrayed` / `extendIntentionByOneDay` / `expireOverdue` (the notification buttons that used them were removed); packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
+6. No automated tests.
+7. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
 
 ---
 

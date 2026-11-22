@@ -24,8 +24,6 @@ export type DayIntentions = {
   [dateString: string]: Intention[];
 };
 
-export type NotificationAction = "prayed" | "not_prayed" | "ignored";
-
 export type UserSettings = {
   notificationTime: string;
   notificationsEnabled: boolean;

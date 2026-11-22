@@ -5,10 +5,11 @@ import { buildNotificationBody, buildNotificationTitle, parseNotificationTime } 
 import { getDateRange } from "../utils/dateUtils";
 import { colors } from "../constants/theme";
 
-export const NOTIFICATION_CATEGORY = "INTENTION_CATEGORY";
 export const NOTIFICATION_CHANNEL = "evening-reflection";
+// Legacy category that used to carry the Prayed / Not Prayed action buttons.
+const LEGACY_NOTIFICATION_CATEGORY = "INTENTION_CATEGORY";
 
-export const setupNotificationCategory = async (): Promise<void> => {
+export const setupNotificationChannel = async (): Promise<void> => {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync(NOTIFICATION_CHANNEL, {
       name: "Evening Reflection",
@@ -20,18 +21,8 @@ export const setupNotificationCategory = async (): Promise<void> => {
       vibrationPattern: [0, 250, 250, 250],
     });
   }
-  await Notifications.setNotificationCategoryAsync(NOTIFICATION_CATEGORY, [
-    {
-      identifier: "PRAYED",
-      buttonTitle: "Prayed",
-      options: { isDestructive: false, isAuthenticationRequired: false, opensAppToForeground: false },
-    },
-    {
-      identifier: "NOT_PRAYED",
-      buttonTitle: "Not Prayed",
-      options: { isDestructive: false, isAuthenticationRequired: false, opensAppToForeground: false },
-    },
-  ]);
+  // Remove the old action-button category from devices that registered it.
+  await Notifications.deleteNotificationCategoryAsync(LEGACY_NOTIFICATION_CATEGORY).catch(() => undefined);
 };
 
 export const requestPermissions = async (): Promise<boolean> => {
@@ -64,7 +55,6 @@ export const scheduleDailyNotifications = async (
       content: {
         title: buildNotificationTitle(),
         body: buildNotificationBody(count),
-        categoryIdentifier: NOTIFICATION_CATEGORY,
         color: colors.accent,
         data: { scheduledFor: day },
       },
