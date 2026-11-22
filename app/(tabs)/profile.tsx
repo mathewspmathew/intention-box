@@ -5,8 +5,6 @@ import { useRouter } from "expo-router";
 import { useAuth } from "../../hooks/useAuth";
 import { useSettingsStore } from "../../stores/settingsStore";
 import { useSettings } from "../../hooks/useSettings";
-// Google Calendar / birthday sync — disabled for now, see notes near "Connections" section below.
-// import { useGoogleCalendar } from "../../hooks/useGoogleCalendar";
 import { NotificationTimeModal } from "../../components/NotificationTimeModal";
 import { TopBarSpacer } from "../../components/TopBarSpacer";
 import { colors, fonts, fontSize, radius, spacing } from "../../constants/theme";
@@ -33,14 +31,7 @@ export default function ProfileScreen() {
   const { user, signOut } = useAuth();
   const { notificationTime, notificationsEnabled } = useSettingsStore();
   const { setSettings } = useSettings(user?.uid);
-  // const { googleCalendarConnected } = useSettingsStore();
-  // const { connect, syncBirthdays, googleCalendarRequestReady } = useGoogleCalendar();
   const [timeModal, setTimeModal] = useState(false);
-
-  // const onConnect = async () => {
-  //   const ok = await connect();
-  //   if (ok) await setSettings({ googleCalendarConnected: true });
-  // };
 
   return (
     <View style={styles.container}>
@@ -95,26 +86,6 @@ export default function ProfileScreen() {
           </View>
           <Feather name="chevron-right" size={22} color={colors.accent} />
         </Pressable>
-
-        {/* Google Calendar connect / birthday sync — disabled for now.
-            To restore: uncomment the useGoogleCalendar import/hook above and this block.
-        <SectionTitle title="Connections" />
-        {!googleCalendarConnected ? (
-          <Pressable
-            onPress={onConnect}
-            disabled={!googleCalendarRequestReady}
-            style={[styles.connectBtn, !googleCalendarRequestReady && { opacity: 0.6 }]}
-          >
-            <Feather name="calendar" size={18} color={colors.background} />
-            <Text style={styles.connectText}>Connect Google Calendar</Text>
-          </Pressable>
-        ) : (
-          <Pressable onPress={syncBirthdays} style={styles.connectBtn}>
-            <Feather name="refresh-cw" size={18} color={colors.background} />
-            <Text style={styles.connectText}>Sync Birthdays</Text>
-          </Pressable>
-        )}
-        */}
 
         <Pressable onPress={signOut} style={styles.signOut}>
           <Text style={styles.signOutText}>Sign Out</Text>
@@ -203,16 +174,6 @@ const styles = StyleSheet.create({
   },
   timeText: { color: colors.primaryText, fontSize: fontSize.md, fontWeight: "600" },
   divider: { height: 1, backgroundColor: colors.background, marginVertical: spacing.md },
-  connectBtn: {
-    backgroundColor: colors.accent,
-    borderRadius: radius.card,
-    paddingVertical: spacing.md,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: spacing.sm,
-  },
-  connectText: { color: colors.background, fontWeight: "700", fontSize: fontSize.md, letterSpacing: 0.5 },
   signOut: { alignSelf: "center", marginTop: spacing.xxxl, paddingVertical: spacing.sm },
   signOutText: { color: colors.mutedText, fontSize: fontSize.sm, textDecorationLine: "underline" },
 });

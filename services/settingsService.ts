@@ -5,7 +5,6 @@ import type { UserSettings } from "../types";
 const DEFAULTS: UserSettings = {
   notificationTime: "22:00",
   notificationsEnabled: true,
-  googleCalendarConnected: false,
   historyRetentionDays: 30,
 };
 

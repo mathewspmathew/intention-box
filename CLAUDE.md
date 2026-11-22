@@ -28,7 +28,7 @@ the intention's end date out by one day automatically. The app syncs across devi
 | State Management | Zustand (3 stores) |
 | Backend / Auth | Firebase JS SDK (Firestore + Auth), signed in via native `@react-native-google-signin/google-signin` → `signInWithCredential` |
 | Local Storage | AsyncStorage (Firebase auth persistence, widget snapshot) |
-| Notifications | expo-notifications (category + channel) |
+| Notifications | expo-notifications (Android channel; no action buttons) |
 | Background | expo-task-manager + **expo-background-task** (not background-fetch) |
 | Calendar UI | react-native-calendars |
 | Date Utilities | date-fns |
@@ -90,7 +90,6 @@ app/                              # Expo Router
 components/
 ├── AddIntentionSheet.tsx         # Bottom sheet: add/edit (text, 1/3/7/custom days), Prayed + delete when editing
 ├── IntentionCard.tsx             # Row: text, "N DAYS REMAINING", prayed state, edit icon
-├── BirthdayTag.tsx               # Birthday tag (unused — birthdays feature disabled)
 ├── DayModal.tsx                  # Tap a non-today calendar day: list + delete (with confirm)
 ├── GlobalAddButton.tsx           # Full-width bottom "Add Intention" button (not a floating FAB)
 ├── NotificationTimeModal.tsx     # 12-hour stepper time picker
@@ -103,10 +102,9 @@ components/
 hooks/
 ├── useAuth.ts                    # Auth state, Google sign-in/out; calls updateWidget on auth change
 ├── useIntentions.ts              # Subscribes to Firestore; add/edit/remove/markPrayed
-├── useNotifications.ts           # Root-level: permissions, category, catch-up, reschedule, action listener
+├── useNotifications.ts           # Root-level: permissions, notification channel, catch-up, reschedule
 ├── useSettings.ts                # Loads/subscribes user settings doc → settingsStore; setSettings
-├── useCalendarData.ts            # Intentions → per-day map + calendar dot marks
-└── useGoogleCalendar.ts          # Birthday sync — DISABLED (not imported anywhere)
+└── useCalendarData.ts            # Intentions → per-day map + calendar dot marks
 
 stores/  intentionStore.ts · calendarStore.ts · settingsStore.ts   (Zustand)
 services/
@@ -114,7 +112,7 @@ services/
 ├── intentionService.ts           # Firestore CRUD, onSnapshot subscribe, catchUpMissedDays
 ├── historyService.ts             # archive / list / delete / prune history
 ├── settingsService.ts            # users/{uid} doc: ensure defaults, update, subscribe
-├── notificationService.ts        # Channel + category, schedule per-day notifications, cancelAll
+├── notificationService.ts        # Android channel, schedule per-day notifications, cancelAll
 └── widgetService.tsx             # Build snapshot, persist to AsyncStorage, requestWidgetUpdate
 tasks/  midnightTask.ts (expo-background-task) · widgetTask.ts (registers widget handler, Android)
 types/index.ts · constants/theme.ts · utils/dateUtils.ts · utils/notificationUtils.ts
@@ -143,11 +141,9 @@ type DayIntentions = { [dateString: string]: Intention[] };
 type UserSettings = {
   notificationTime: string;       // "HH:MM" 24h, default "22:00"
   notificationsEnabled: boolean;  // default true
-  googleCalendarConnected: boolean; // default false (feature disabled)
   historyRetentionDays: number;   // 0 = don't archive; >0 = archive + auto-delete after N days. Default 30. UI offers 7 / 30.
 };
 
-type Birthday = { id; name; date; isRecurring };  // unused while birthdays disabled
 ```
 
 ---
@@ -204,7 +200,7 @@ History is pruned (older than `historyRetentionDays`) when the Completed screen 
 
 - **Today** (`(tabs)/today`, initial tab): intentions where `startDate ≤ today ≤ currentEndDate`. `IntentionCard` shows text, "N DAYS REMAINING", a Prayed/Completed pill once prayed, and an edit icon (hidden once prayed). "Mark all as Prayed" button; empty state "No intentions for today. Tap + to add one."
 - **Calendar** (`(tabs)/calendar`): month view, gold dot on days with remaining (unprayed) intentions; today is outlined. Tap today → Today tab; tap other day → `DayModal` (list with delete + confirm). "Today" button resets month. "Add Intention" button at bottom opens the sheet.
-- **Profile** (`(tabs)/profile`): avatar/email, notifications on/off toggle, notification time (modal, disabled when off), link to Completed Intentions, Sign Out. The Google Calendar "Connections" block is commented out.
+- **Profile** (`(tabs)/profile`): avatar/email, notifications on/off toggle, notification time (modal, disabled when off), link to Completed Intentions, Sign Out.
 - **Completed** (`/completed`): history list newest-first, "auto-delete after" picker (7 days / 1 month), broom button → ConfirmModal → clear all.
 - **Sign-in** (`(auth)/sign-in`): single "Continue with Google" button, shows error text.
 - Auth gate lives in `app/_layout.tsx` (`useSegments` + `router.replace`).
@@ -250,9 +246,9 @@ Widget task handler (TodayWidgetTask.tsx) → readSnapshot() → render
 
 ---
 
-## Google Calendar / Birthdays — DISABLED
+## Removed Features
 
-Commit "Disable Google Calendar connect / birthday sync feature". `hooks/useGoogleCalendar.ts` (Google Sign-In `addScopes` for `calendar.readonly`, token in expo-secure-store, birthdays cached in AsyncStorage) still exists but is not imported; the Profile block and the birthday marks in `useCalendarData` are commented out. `BirthdayTag`, `Birthday` type, `googleCalendarConnected` setting and `calendarStore.birthdays` are leftovers. To restore: uncomment the Profile block/imports and the `useCalendarData` birthday marks.
+Google Calendar connect / birthday sync (and its `expo-secure-store` token storage) was fully removed. It can be recovered from git history (commit "Disable Google Calendar connect / birthday sync feature" and the removal commit after it). Existing Firestore `users/{uid}` docs may still carry a harmless `googleCalendarConnected` field.
 
 ---
 
@@ -273,7 +269,7 @@ npm run typecheck               # tsc --noEmit  (currently clean)
 npx expo install <package>      # Expo-compatible installs
 ```
 
-- `app.json`: scheme `intentionbox`, plugins `expo-router`, `expo-secure-store`, `expo-notifications`, `react-native-android-widget` (TodayWidget), `@react-native-google-signin/google-signin`, `expo-build-properties` (arm64-v8a only; minify + shrink resources in release), `newArchEnabled: true`.
+- `app.json`: scheme `intentionbox`, plugins `expo-router`, `expo-notifications`, `react-native-android-widget` (TodayWidget), `@react-native-google-signin/google-signin`, `expo-build-properties` (arm64-v8a only; minify + shrink resources in release), `newArchEnabled: true`.
 - `google-services.json` is gitignored (`app/google-services.json`); it is required for native Google Sign-In on Android, and `app.json` has no `googleServicesFile` entry — it was not present in the working tree when this file was last audited. Re-add/wire it before a fresh native build.
 - `*.apk`, `android/`, `ios/` are gitignored.
 
@@ -285,9 +281,8 @@ npx expo install <package>      # Expo-compatible installs
 2. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
 3. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
 4. History-preference first-launch modal from the original spec was never implemented.
-5. Unused code/deps: `BirthdayTag` and `useGoogleCalendar` (kept on purpose for the disabled Google Calendar feature).
-6. No automated tests.
-7. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
+5. No automated tests.
+6. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
 
 ---
 

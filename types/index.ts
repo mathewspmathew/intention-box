@@ -27,14 +27,6 @@ export type DayIntentions = {
 export type UserSettings = {
   notificationTime: string;
   notificationsEnabled: boolean;
-  googleCalendarConnected: boolean;
   // 0 = no history (don't archive). >0 = archive + auto-delete after N days.
   historyRetentionDays: number;
-};
-
-export type Birthday = {
-  id: string;
-  name: string;
-  date: string;
-  isRecurring: boolean;
 };
