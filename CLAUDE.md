@@ -285,7 +285,7 @@ npx expo install <package>      # Expo-compatible installs
 2. **Widget freshness depends on a mounted `useIntentions` listener** (and each of Today and Calendar creates its own `onSnapshot` subscription).
 3. Notifications are scheduled for every day of every intention's range up front; large ranges could hit OS scheduled-notification limits (notably iOS's 64).
 4. History-preference first-launch modal from the original spec was never implemented.
-5. Unused code/deps: `BirthdayTag` and `useGoogleCalendar` (kept on purpose for the disabled Google Calendar feature); packages `expo-auth-session`, `expo-web-browser`, `expo-crypto` have no imports in source.
+5. Unused code/deps: `BirthdayTag` and `useGoogleCalendar` (kept on purpose for the disabled Google Calendar feature).
 6. No automated tests.
 7. Firestore rules are in the repo (`firestore.rules`); whether they are deployed to the Firebase project hasn't been verified.
 
