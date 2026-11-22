@@ -9,16 +9,19 @@ import {
 import { archiveIntention } from "../services/historyService";
 import { scheduleDailyNotifications, cancelAll } from "../services/notificationService";
 import { updateWidget } from "../services/widgetService";
-import { useSettingsStore } from "../stores/settingsStore";
+import { getSettings } from "../services/settingsService";
 import { isPast } from "../utils/dateUtils";
 
 export const MIDNIGHT_TASK = "MIDNIGHT_TASK";
 
 TaskManager.defineTask(MIDNIGHT_TASK, async () => {
   try {
+    // Headless runs start with no app state: wait for persisted auth to restore, and read
+    // settings from Firestore (the Zustand settings store only holds defaults here).
+    await auth.authStateReady();
     const user = auth.currentUser;
     if (!user) return BackgroundTask.BackgroundTaskResult.Success;
-    const { historyRetentionDays, notificationTime, notificationsEnabled } = useSettingsStore.getState();
+    const { historyRetentionDays, notificationTime, notificationsEnabled } = await getSettings(user.uid);
 
     await catchUpMissedDays(user.uid);
 

@@ -25,6 +25,13 @@ export const ensureSettingsDoc = async (userId: string): Promise<UserSettings> =
   }
 };
 
+// Strict read for headless callers (background task): throws if Firestore can't be reached,
+// so callers never mistake DEFAULTS for the user's real settings.
+export const getSettings = async (userId: string): Promise<UserSettings> => {
+  const snap = await getDoc(userDoc(userId));
+  return { ...DEFAULTS, ...((snap.data() ?? {}) as Partial<UserSettings>) };
+};
+
 export const updateSettings = async (
   userId: string,
   patch: Partial<UserSettings>,
